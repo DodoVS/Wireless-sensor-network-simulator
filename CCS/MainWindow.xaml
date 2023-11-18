@@ -27,32 +27,32 @@
             </StackPanel>
             <StackPanel Grid.Row="1" Margin="5">
                 <Label FontWeight="Bold">Sensor parameters</Label>
-                <Button Click="readWSN">read WSN</Button>
+                <Button Click="readWSN_Click">read WSN</Button>
                 <Grid Margin="2">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="auto" />
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
                     <Label>sensor range r</Label>
-                    <TextBox Grid.Column="1"></TextBox>
+                    <TextBox x:Name="SensorRange" Grid.Column="1" PreviewTextInput="TextBox_PreviewNumbersOnly"></TextBox>
                 </Grid>
             </StackPanel>
             <StackPanel Grid.Row="2" Margin="5">
                 <Label FontWeight="Bold">Activate sensors</Label>
                 <RadioButton Content="deterministically" GroupName="ActiveSensors"/>
                 <Button>read WSN on/off</Button>
-                <RadioButton Content="randomly" GroupName="ActiveSensors"/>
+                <RadioButton Content="randomly" GroupName="ActiveSensors" IsChecked="True"/>
                 <Grid Margin="2">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="auto"/>
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
                     <Label>sensor probability initial on</Label>
-                    <TextBox x:Name="RandomlySensor" Grid.Column="1"></TextBox>
+                    <TextBox x:Name="RandomlySensor" Grid.Column="1" PreviewTextInput="TextBox_PreviewNumbersOnly"></TextBox>
                 </Grid>
             </StackPanel>
             <StackPanel Grid.Row="3" Margin="5">
-                <Button>Show WSN</Button>
+                <Button Click="ShowWSN_Click">Show WSN</Button>
                 <Grid Margin="5">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
@@ -80,7 +80,7 @@
                 <Button Grid.Column="1" Margin="5">next page</Button>
             </Grid>
         </Grid>
-        <Viewbox Stretch="Fill" Grid.Column="1">
+        <Viewbox Stretch="Fill" Grid.Column="1" ClipToBounds="True">
             <Canvas x:Name="myCanvas" Height="100" Width="100"></Canvas>
         </Viewbox>
     </Grid>

@@ -2,8 +2,10 @@
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 
@@ -16,12 +18,14 @@ namespace CCS
     {
         private List<Point> POIs;
         private List<Sensor> Sensors;
+        private Random random;
 
         public MainWindow()
         {
             InitializeComponent();
             POIs = new List<Point>();
             Sensors = new List<Sensor>();
+            random = new Random();
         }
 
         private void POIRadio_Checked(object sender, RoutedEventArgs e)
@@ -42,11 +46,10 @@ namespace CCS
                         break;
                 }
                 POIs = CreatePoints(numSectors);
-
-                DrawPoints();
-                if(Sensors.Count > 0)
-                    DrawSensors();
             }
+            DrawPoints();
+            if (Sensors.Count > 0)
+                DrawSensors();
         }
 
         private void DrawPoints()
@@ -100,11 +103,10 @@ namespace CCS
                 Canvas.SetTop(ellipse, sensor.Y - ellipse.Height / 2);
 
                 myCanvas.Children.Add(ellipse);
-                Trace.WriteLine(sensor.X);
             }
         }
 
-        private void readWSN(object sender, RoutedEventArgs e)
+        private void readWSN_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*";
@@ -136,6 +138,71 @@ namespace CCS
                 }
             }
             
+        }
+
+        private void TextBox_PreviewNumbersOnly(object sender, TextCompositionEventArgs e)
+        {
+            if (!char.IsDigit(e.Text, 0) &&
+                e.Text != "." &&
+                e.Text != "-" ||
+                (e.Text == "-" && ((TextBox)sender).Text.Length > 0) ||
+                ((TextBox)sender).Text.Contains(".") && e.Text == ".")
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void ActivateSensors(double probability)
+        {
+            foreach(Sensor sensor in Sensors)
+            {
+                double randomNumber = random.NextDouble();
+                if(probability >= randomNumber)
+                    sensor.IsWorking = true;
+                else 
+                    sensor.IsWorking = false;
+            }
+        }
+
+        private void DrawCircles(double radius)
+        {
+            SolidColorBrush strokeBrush = new SolidColorBrush(Colors.Green);
+            strokeBrush.Opacity = .25d;
+            foreach (Sensor sensor in Sensors)
+            {
+                Ellipse ellipse = new Ellipse
+                {
+                    Width = radius * 2,
+                    Height = radius * 2,
+                    Fill = Brushes.Transparent,
+                    Stroke = Brushes.Black,
+                    StrokeThickness = 0.1
+                };
+                if (sensor.IsWorking)
+                    ellipse.Fill = strokeBrush;
+
+                Canvas.SetLeft(ellipse, sensor.X - radius);
+                Canvas.SetTop(ellipse, sensor.Y - radius);
+
+                myCanvas.Children.Add(ellipse);
+            }
+        }
+
+        private void ShowWSN_Click(object sender, RoutedEventArgs e)
+        {
+            if (POIs.Count < 1 || 
+                Sensors.Count < 1 ||
+                SensorRange.Text == "" || 
+                RandomlySensor.Text == "" || 
+                double.Parse(SensorRange.Text, CultureInfo.InvariantCulture) < 0 ||
+                double.Parse(RandomlySensor.Text, CultureInfo.InvariantCulture) < 0 ||
+                double.Parse(RandomlySensor.Text, CultureInfo.InvariantCulture) > 1)
+                return;
+
+            DrawPoints();
+            DrawSensors();
+            ActivateSensors(double.Parse(RandomlySensor.Text, CultureInfo.InvariantCulture));
+            DrawCircles(double.Parse(SensorRange.Text, CultureInfo.InvariantCulture));
         }
     }
 }
