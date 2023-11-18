@@ -21,7 +21,7 @@
             </Grid.RowDefinitions>
             <StackPanel Orientation="Vertical" Margin="5">
                 <Label FontWeight="Bold">Points of interests (POIs)</Label>
-                <RadioButton Content="POI 36" GroupName="POIs" Checked="POIRadio_Checked"/>
+                <RadioButton Content="POI 36" GroupName="POIs" Checked="POIRadio_Checked" />
                 <RadioButton Content="POI 121" GroupName="POIs" Checked="POIRadio_Checked"/>
                 <RadioButton Content="POI 441" GroupName="POIs" Checked="POIRadio_Checked"/>
             </StackPanel>
@@ -33,7 +33,7 @@
                         <ColumnDefinition Width="auto" />
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
-                    <Label>sensor ranger</Label>
+                    <Label>sensor range r</Label>
                     <TextBox Grid.Column="1"></TextBox>
                 </Grid>
             </StackPanel>
@@ -48,7 +48,7 @@
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
                     <Label>sensor probability initial on</Label>
-                    <TextBox Grid.Column="1"></TextBox>
+                    <TextBox x:Name="RandomlySensor" Grid.Column="1"></TextBox>
                 </Grid>
             </StackPanel>
             <StackPanel Grid.Row="3" Margin="5">
@@ -81,7 +81,7 @@
             </Grid>
         </Grid>
         <Viewbox Stretch="Fill" Grid.Column="1">
-            <Canvas x:Name="myCanvas" Background="Aqua" Height="100" Width="100"></Canvas>
+            <Canvas x:Name="myCanvas" Height="100" Width="100"></Canvas>
         </Viewbox>
     </Grid>
 </Window>

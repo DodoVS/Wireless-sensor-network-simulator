@@ -1,15 +1,10 @@
 ﻿using Microsoft.Win32;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace CCS
@@ -20,11 +15,13 @@ namespace CCS
     public partial class MainWindow : Window
     {
         private List<Point> POIs;
+        private List<Sensor> Sensors;
 
         public MainWindow()
         {
             InitializeComponent();
             POIs = new List<Point>();
+            Sensors = new List<Sensor>();
         }
 
         private void POIRadio_Checked(object sender, RoutedEventArgs e)
@@ -47,6 +44,8 @@ namespace CCS
                 POIs = CreatePoints(numSectors);
 
                 DrawPoints();
+                if(Sensors.Count > 0)
+                    DrawSensors();
             }
         }
 
@@ -86,6 +85,25 @@ namespace CCS
             return points;
         }
 
+        private void DrawSensors()
+        {
+            foreach (Sensor sensor in Sensors)
+            {
+                Ellipse ellipse = new Ellipse
+                {
+                    Width = 1,
+                    Height = 1,
+                    Fill = Brushes.Red,
+                };
+
+                Canvas.SetLeft(ellipse, sensor.X - ellipse.Width / 2);
+                Canvas.SetTop(ellipse, sensor.Y - ellipse.Height / 2);
+
+                myCanvas.Children.Add(ellipse);
+                Trace.WriteLine(sensor.X);
+            }
+        }
+
         private void readWSN(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
@@ -95,18 +113,29 @@ namespace CCS
             {
                 try
                 {
-                    // Get the selected file name
                     string fileName = openFileDialog.FileName;
-
-                    // Read the contents of the selected file
-                    string fileContent = File.ReadAllText(fileName);
-                    MessageBox.Show("File content:\n" + fileContent);
+                    string[] fileLines = File.ReadAllLines(fileName);
+                    
+                    Sensors = new List<Sensor>();
+                    for (int i = 1; i< fileLines.Length; i++)
+                    {
+                        string[] coordinates = fileLines[i].Split(' ');
+                        Sensors.Add(
+                            new Sensor(
+                                double.Parse(coordinates[0], CultureInfo.InvariantCulture), 
+                                double.Parse(coordinates[1], CultureInfo.InvariantCulture)
+                            )
+                        );
+                    }
+                    DrawPoints();
+                    DrawSensors();
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show($"Error reading file: {ex.Message}");
                 }
             }
+            
         }
     }
 }

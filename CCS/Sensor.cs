@@ -8,12 +8,12 @@ namespace CCS
 {
     internal class Sensor
     {
-        public int X;
-        public int Y;
+        public double X;
+        public double Y;
         public int Index;
         public bool IsWorking;
 
-        public Sensor(int x, int y) {
+        public Sensor(double x, double y) {
             X = x;
             Y = y;
         }
