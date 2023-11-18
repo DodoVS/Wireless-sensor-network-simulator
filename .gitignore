@@ -1,0 +1,15 @@
+﻿################################################################################
+# Ten plik .gitignore został utworzony automatycznie przez Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs/CCS/FileContentIndex/5a509392-eabf-43b7-9fbd-ea7f430680a7.vsidx
+/.vs/CCS/FileContentIndex/ceb0d1f7-b54e-4845-817a-7976944dbaf9.vsidx
+/.vs/CCS/FileContentIndex
+/CCS/obj/project.nuget.cache
+/CCS/obj/project.assets.json
+/CCS/obj/CCS.csproj.nuget.g.props
+/CCS/obj/CCS.csproj.nuget.dgspec.json
+/CCS/obj/Debug/net8.0-windows/CCS_MarkupCompile.i.lref
+/CCS/obj/Debug/net8.0-windows/CCS_MarkupCompile.i.cache
+/CCS/obj/Debug/net8.0-windows/CCS.GeneratedMSBuildEditorConfig.editorconfig
+/CCS/obj/Debug/net8.0-windows/CCS.assets.cache
