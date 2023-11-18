@@ -104,7 +104,6 @@ namespace CCS
                 }
                 catch (Exception ex)
                 {
-                    //msg box
                     MessageBox.Show($"Error reading file: {ex.Message}");
                 }
             }
