@@ -8,6 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using Path = System.IO.Path;
 
 namespace CCS
 {
@@ -26,6 +27,27 @@ namespace CCS
             POIs = new List<Point>();
             Sensors = new List<Sensor>();
             random = new Random();
+            CreateFolders();
+        }
+        
+        private void CreateFolders()
+        {
+            if(!Directory.Exists("INIT-RESULTS"))
+            {
+                Directory.CreateDirectory("INIT-RESULTS");
+            }
+            if(!Directory.Exists("m-RESULTS"))
+            {
+                Directory.CreateDirectory("m-RESULTS");
+            }
+            if(!Directory.Exists("DATA"))
+            {
+                Directory.CreateDirectory("DATA");
+            }
+            if(!Directory.Exists("RESULTS"))
+            {
+                Directory.CreateDirectory("RESULTS");
+            }
         }
 
         private void POIRadio_Checked(object sender, RoutedEventArgs e)
@@ -110,6 +132,7 @@ namespace CCS
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*";
+            openFileDialog.InitialDirectory = Path.Combine(Environment.CurrentDirectory, "DATA");
 
             if (openFileDialog.ShowDialog() == true)
             {
@@ -203,6 +226,41 @@ namespace CCS
             DrawSensors();
             ActivateSensors(double.Parse(RandomlySensor.Text, CultureInfo.InvariantCulture));
             DrawCircles(double.Parse(SensorRange.Text, CultureInfo.InvariantCulture));
+        }
+
+        public void AssignIDs()
+        {
+            var sortedSensors = Sensors.OrderByDescending(s => s.Y).ThenBy(s => s.X).ToList();
+
+            for (int i = 0; i < sortedSensors.Count; i++)
+            {
+                sortedSensors[i].Index = i + 1;
+            }
+            Sensors = sortedSensors;
+        }
+
+        private void CalcSenorID_Click(object sender, RoutedEventArgs e)
+        {
+            AssignIDs();
+            string filename = "INIT-RESULTS/sensorID-WSN-";
+            filename += Sensors.Count.ToString()+".txt";
+            try
+            {
+                using (StreamWriter writer = new StreamWriter(filename))
+                {
+                    writer.WriteLine("#id x y");
+                    foreach (var sensor in Sensors)
+                    {
+                        writer.WriteLine($"{sensor.Index} {sensor.X} {sensor.Y}");
+                    }
+                }
+
+                Console.WriteLine($"Lista została zapisana do pliku: {filename}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Wystąpił błąd podczas zapisywania do pliku: {ex.Message}");
+            }
         }
     }
 }

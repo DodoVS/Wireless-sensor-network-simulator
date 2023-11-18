@@ -68,7 +68,7 @@
                     <Button Grid.Column="1" Grid.Row="0" Margin="5">calc all q</Button>
                     <Button Grid.Column="0" Grid.Row="1" Margin="5">find WSN graph</Button>
                     <Button Grid.Column="1" Grid.Row="1" Margin="5">find sensors rank</Button>
-                    <Button Grid.Column="0" Grid.Row="2" Margin="5">find sensors rank</Button>
+                    <Button Grid.Column="0" Grid.Row="2" Margin="5" Click="CalcSenorID_Click">calc sensor ID</Button>
                 </Grid>
             </StackPanel>
             <Grid Grid.Row="4">
