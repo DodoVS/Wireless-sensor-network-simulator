@@ -8,10 +8,10 @@ namespace CCS
 {
     internal class Sensor
     {
-        public double X;
-        public double Y;
-        public int Index;
-        public bool IsWorking;
+        public double X { get; set; }
+        public double Y { get; set; }
+        public int Index { get; set; }
+        public bool IsWorking { get;  set; }
 
         public Sensor(double x, double y) {
             X = x;

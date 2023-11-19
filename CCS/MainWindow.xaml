@@ -34,7 +34,7 @@
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
                     <Label>sensor range r</Label>
-                    <TextBox x:Name="SensorRange" Grid.Column="1" PreviewTextInput="TextBox_PreviewNumbersOnly"></TextBox>
+                    <TextBox x:Name="SensorRange" Grid.Column="1" PreviewTextInput="TextBox_PreviewNumbersOnly" TextChanged="SensorRange_TextChanged"></TextBox>
                 </Grid>
             </StackPanel>
             <StackPanel Grid.Row="2" Margin="5">
@@ -64,7 +64,7 @@
                         <RowDefinition />
                         <RowDefinition />
                     </Grid.RowDefinitions>
-                    <Button Grid.Column="0" Grid.Row="0" Margin="5">calc single q</Button>
+                    <Button Grid.Column="0" Grid.Row="0" Margin="5" Click="Calc_singleQ_click">calc single q</Button>
                     <Button Grid.Column="1" Grid.Row="0" Margin="5">calc all q</Button>
                     <Button Grid.Column="0" Grid.Row="1" Margin="5">find WSN graph</Button>
                     <Button Grid.Column="1" Grid.Row="1" Margin="5">find sensors rank</Button>
