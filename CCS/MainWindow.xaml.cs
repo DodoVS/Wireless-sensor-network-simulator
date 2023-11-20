@@ -339,7 +339,8 @@ namespace CCS
             }
 
 
-            filename = "INIT-RESULTS/sensor-states-10.txt";
+            filename = "INIT-RESULTS/sensor-states-";
+            filename += GetWorkingSensorsNumber() + ".txt";
             try
             {
                 using (StreamWriter writer = new StreamWriter(filename))
@@ -359,6 +360,19 @@ namespace CCS
             }
         }
 
+/*
+        Creates number from binary construction of working states in sensors
+ */
+        private int GetWorkingSensorsNumber()
+        {
+            string binaryNumber = "";
+
+            foreach (Sensor sensor in Sensors)
+                binaryNumber += sensor.IsWorking ? "1" : "0";
+
+            return Convert.ToInt32(binaryNumber, 2);
+        }
+
 
         /*
                 Calculates the coverage as the fraction of PoI monitored by the sensors and then 
@@ -370,7 +384,7 @@ namespace CCS
             var numberOfSensors = Sensors.Count.ToString();
 
 
-            string filepath = "INIT-RESULTS/single q WSN-";
+            string filepath = "INIT-RESULTS/cov-single-WSN-";
             filepath += Sensors.Count.ToString() + ".txt";
 
             try
@@ -410,7 +424,7 @@ namespace CCS
                     List<double> qValues = CalculateNormalizedQValues(Sensors, PoIInActiveArea);
 
                     System.Diagnostics.Debug.WriteLine($"q: {q}");
-                    writer.Write($"{q}");
+                    writer.Write($"{Math.Round(q, 2)}");
                     foreach (Sensor sensor in Sensors)
                     {
                         writer.Write($"\t{Convert.ToInt32(sensor.IsWorking)}");
@@ -428,6 +442,90 @@ namespace CCS
             {
                 System.Diagnostics.Debug.WriteLine($"Error writing file: {ex.Message}");
             }
+        }
+
+        private void Calc_allQ_click(object sender, RoutedEventArgs e)
+        {
+            var numberOfSensors = Sensors.Count.ToString();
+
+
+            string filepath = "INIT-RESULTS/cov-all-WSN-";
+            filepath += Sensors.Count.ToString() + ".txt";
+
+            try
+            {
+                using (StreamWriter writer = new StreamWriter(filepath))
+                {
+                    // Write parameters of run
+                    writer.WriteLine("#parameters of run:");
+                    writer.WriteLine($"#Number of Sensors {numberOfSensors}");
+                    writer.WriteLine($"#Sensor Range: {sensorRange}");
+                    writer.WriteLine($"#POI: {this.numSectors}");
+                    writer.WriteLine($"#Sensor from file: {sensorFile}");
+                    writer.WriteLine($"#Sensor state from the file: not applied");
+
+                    // Write header
+                    writer.Write("#\t q");
+                    for (int i = 1; i <= Sensors.Count; i++)
+                    {
+                        writer.Write($"\t s{i}");
+                    }
+
+                    for (int i = 1; i <= Sensors.Count; i++)
+                    {
+                        writer.Write($"\t q{i}");
+                    }
+
+                    writer.WriteLine("");
+
+                    // Write data
+
+                    for(int i=0;i<Math.Pow(2, Sensors.Count); i++)
+                    {
+                        List<Sensor> newSensors = ActiveSensorsFromNumber(Sensors,i);
+                        List<Point> PoIInActiveArea = GetPointInActiveAreas(newSensors);
+                        double q = (double)PoIInActiveArea.Count / (double)POIs.Count;
+                        List<double> qValues = CalculateNormalizedQValues(newSensors, PoIInActiveArea);
+
+                        writer.Write($"{i}\t {Math.Round(q, 2)}");
+                        foreach (Sensor sensor in newSensors)
+                        {
+                            writer.Write($"\t{Convert.ToInt32(sensor.IsWorking)}");
+                        }
+
+                        foreach (double qs in qValues)
+                        {
+                            writer.Write($"\t{Math.Round(qs, 2)}");
+                        }
+                        writer.WriteLine("");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error writing file: {ex.Message}");
+            }
+        }
+
+        static List<Sensor> ActiveSensorsFromNumber(List<Sensor> sensors, int number)
+        {
+            List<Sensor> newActiveSensors = new List<Sensor>(sensors);
+            string binaryNumber = Convert.ToString(number, 2).PadLeft(sensors.Count, '0');
+            for(int j=0;j<sensors.Count;j++)
+            {
+                newActiveSensors[j].IsWorking = ParseStringToBoolean(binaryNumber[j]);
+            }
+            return newActiveSensors;
+        }
+
+        static bool ParseStringToBoolean(char value)
+        {
+            if (value == '1')
+                return true;
+            else if(value == '0')
+                return false;
+            else
+                return false;
         }
 
 /*
