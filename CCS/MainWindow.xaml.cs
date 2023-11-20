@@ -26,6 +26,7 @@ namespace CCS
         private int numSectors;
         private double sensorRange;
         private string sensorFile;
+        private bool isRadomly;
 
         public MainWindow()
         {
@@ -33,7 +34,10 @@ namespace CCS
             POIs = new List<Point>();
             Sensors = new List<Sensor>();
             random = new Random();
+            isRadomly = true;
+            ReadWSNONOFFButton.IsEnabled = false;
             CreateFolders();
+
         }
 
         private void CreateFolders()
@@ -72,19 +76,6 @@ namespace CCS
             {
                 MessageBox.Show($"Error parsing value: {ex.Message}");
             }
-        }
-
-        private bool AreAllValidNumericChars(string str)
-        {
-            foreach (char c in str)
-            {
-                if (!char.IsDigit(c) && c != '.')
-                {
-                    return false;
-                }
-            }
-
-            return true;
         }
 
         private void POIRadio_Checked(object sender, RoutedEventArgs e)
@@ -260,11 +251,16 @@ namespace CCS
             if (POIs.Count < 1 ||
                 Sensors.Count < 1 ||
                 SensorRange.Text == "" ||
-                RandomlySensor.Text == "" ||
-                double.Parse(SensorRange.Text, CultureInfo.InvariantCulture) < 0 ||
-                double.Parse(RandomlySensor.Text, CultureInfo.InvariantCulture) < 0 ||
-                double.Parse(RandomlySensor.Text, CultureInfo.InvariantCulture) > 1)
+                double.Parse(SensorRange.Text, CultureInfo.InvariantCulture) < 0)
                 return;
+
+            if (isRadomly)
+            {
+                if (RandomlySensor.Text == "" || 
+                    double.Parse(RandomlySensor.Text, CultureInfo.InvariantCulture) < 0 ||
+                    double.Parse(RandomlySensor.Text, CultureInfo.InvariantCulture) > 1)
+                    return;
+            }
 
             // Assing ID because there is chance that user forget that do manually
             AssignIDs();
@@ -272,7 +268,8 @@ namespace CCS
 
             DrawPoints();
             DrawSensors();
-            ActivateSensors(double.Parse(RandomlySensor.Text, CultureInfo.InvariantCulture));
+            if(isRadomly)
+                ActivateSensors(double.Parse(RandomlySensor.Text, CultureInfo.InvariantCulture));
             DrawCircles(double.Parse(SensorRange.Text, CultureInfo.InvariantCulture));
 
             // Add PoI to the List inside Sensors to make somethinks easier but user need to
@@ -561,6 +558,57 @@ namespace CCS
         static double CalculateDistance(double x1, double y1, double x2, double y2)
         {
             return Math.Sqrt(Math.Pow(x2 - x1, 2) + Math.Pow(y2 - y1, 2));
+        }
+
+        private void ReadWSNOnOff_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*";
+            openFileDialog.InitialDirectory = Path.Combine(Environment.CurrentDirectory, "DATA");
+
+            if (openFileDialog.ShowDialog() == true)
+            {
+                try
+                {
+                    string fileName = openFileDialog.FileName;
+                    sensorFile = GetFileNameFromPath(fileName);
+                    string[] fileLines = File.ReadAllLines(fileName);
+                    for (int i = 1; i < fileLines.Length; i++)
+                    {
+                        string[] coordinates = fileLines[i].Split(' ');
+                        double x = double.Parse(coordinates[1], CultureInfo.InvariantCulture);
+                        double y = double.Parse(coordinates[2], CultureInfo.InvariantCulture);
+                        int sensorIndex = Sensors.FindIndex(sensor => sensor.X == x && sensor.Y == y);
+
+                        Sensors[sensorIndex].Index = int.Parse(coordinates[0]);
+                        Sensors[sensorIndex].IsWorking = ParseStringToBoolean(coordinates[3][0]);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error reading file: {ex.Message}");
+                }
+            }
+        }
+
+        private void ActiveSensorRadio_Checked(object sender, RoutedEventArgs e)
+        {
+            if (sender is RadioButton radioButton)
+            {
+                if(radioButton.Content.ToString() == "randomly")
+                {
+                    isRadomly = true;
+                    ReadWSNONOFFButton.IsEnabled = false;
+                    RandomlySensor.IsEnabled = true;
+                }
+                else
+                {
+                    isRadomly = false;
+                    ReadWSNONOFFButton.IsEnabled = true;
+                    RandomlySensor.IsEnabled = false;
+                }
+              
+            }
         }
     }
 }

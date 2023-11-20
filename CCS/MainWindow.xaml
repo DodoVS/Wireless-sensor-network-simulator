@@ -39,9 +39,9 @@
             </StackPanel>
             <StackPanel Grid.Row="2" Margin="5">
                 <Label FontWeight="Bold">Activate sensors</Label>
-                <RadioButton Content="deterministically" GroupName="ActiveSensors"/>
-                <Button>read WSN on/off</Button>
-                <RadioButton Content="randomly" GroupName="ActiveSensors" IsChecked="True"/>
+                <RadioButton Content="deterministically" GroupName="ActiveSensors" Checked="ActiveSensorRadio_Checked"/>
+                <Button x:Name="ReadWSNONOFFButton" Click="ReadWSNOnOff_Click">read WSN on/off</Button>
+                <RadioButton Content="randomly" GroupName="ActiveSensors" Checked="ActiveSensorRadio_Checked"/>
                 <Grid Margin="2">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="auto"/>
