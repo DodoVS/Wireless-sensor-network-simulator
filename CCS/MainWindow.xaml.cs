@@ -3,6 +3,7 @@ using System.Buffers.Text;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
@@ -137,9 +138,9 @@ namespace CCS
 
             double sectors = 100 / Math.Sqrt(numberOfPoints);
 
-            for (double i = 0; i < 100; i += sectors)
+            for (double i = 0; i < 100-(sectors/2); i += sectors)
             {
-                for (double j = 0; j < 100; j += sectors)
+                for (double j = 0; j < 100-(sectors / 2); j += sectors)
                 {
                     points.Add(new Point(i + (sectors / 2), j + (sectors / 2)));
                 }
@@ -228,8 +229,6 @@ namespace CCS
                 else
                     sensor.IsWorking = false;
             }
-
-
         }
 
         private void DrawCircles(double radius)
@@ -267,12 +266,19 @@ namespace CCS
                 double.Parse(RandomlySensor.Text, CultureInfo.InvariantCulture) > 1)
                 return;
 
+            // Assing ID because there is chance that user forget that do manually
+            AssignIDs();
+
+
             DrawPoints();
             DrawSensors();
             ActivateSensors(double.Parse(RandomlySensor.Text, CultureInfo.InvariantCulture));
             DrawCircles(double.Parse(SensorRange.Text, CultureInfo.InvariantCulture));
 
-
+            // Add PoI to the List inside Sensors to make somethinks easier but user need to
+            // do showWSN every param change
+            ClearPoIInSensors();
+            AssignPoIToSensors();
         }
 
         public void AssignIDs()
@@ -285,16 +291,31 @@ namespace CCS
             }
 
             Sensors = sortedSensors;
+        }
+/*
+         Assign POI to every Sensor
+*/
+        private void AssignPoIToSensors()
+        {
             foreach (var sensor in Sensors)
             {
-
-                System.Diagnostics.Debug.WriteLine($"{sensor.Index} {sensor.X} {sensor.Y}");
+                foreach(Point point in POIs)
+                {
+                    double distance = CalculateDistance(sensor.X,sensor.Y,point.X,point.Y);
+                    if (distance <= sensorRange)
+                        sensor.PoIs.Add(point);
+                }
             }
-
 
         }
 
-        private void CalcSenorID_Click(object sender, RoutedEventArgs e)
+        private void ClearPoIInSensors()
+        {
+            foreach (var sensor in Sensors)
+                sensor.PoIs = new List<Point>();
+        }
+
+        private void CalcSensorID_Click(object sender, RoutedEventArgs e)
         {
             AssignIDs();
             string filename = "INIT-RESULTS/sensorID-WSN-";
@@ -338,14 +359,12 @@ namespace CCS
             }
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-        }
-/*
-        Calculates the coverage as the fraction of PoI monitored by the sensors and then 
-        calculates normalized quality values 
-        for each sensor based on the provided formula.
-*/
+
+        /*
+                Calculates the coverage as the fraction of PoI monitored by the sensors and then 
+                calculates normalized quality values 
+                for each sensor based on the provided formula.
+        */
         private void Calc_singleQ_click(object sender, RoutedEventArgs e)
         {
             var numberOfSensors = Sensors.Count.ToString();
@@ -370,7 +389,7 @@ namespace CCS
                     writer.WriteLine($"#Sensor for file: {filepath}.txt");
 
                     // Write header
-                    writer.Write("#\t q\t s");
+                    writer.Write("#\t q");
                     for (int i = 1; i <= Sensors.Count; i++)
                     {
                         writer.Write($"\t s{i}");
@@ -382,26 +401,24 @@ namespace CCS
                     }
 
                     writer.WriteLine("");
-
                     writer.Write("\t");
                     // Write data
-                    double q = CalculateCoverage(Sensors);
-                    int s = Sensors.Count;
-                    List<double> qValues = CalculateNormalizedQValues(Sensors, q);
+
+
+                    List<Point> PoIInActiveArea = GetPointInActiveAreas(Sensors);
+                    double q = (double)PoIInActiveArea.Count / (double)POIs.Count;
+                    List<double> qValues = CalculateNormalizedQValues(Sensors, PoIInActiveArea);
 
                     System.Diagnostics.Debug.WriteLine($"q: {q}");
                     writer.Write($"{q}");
-                    System.Diagnostics.Debug.WriteLine($"s: {s}");
-                    writer.Write($"\t{s*2}");
-                    for (int i = 0; i < s; i++)
+                    foreach (Sensor sensor in Sensors)
                     {
-                        writer.Write($"\t{Convert.ToInt32(Sensors[i].IsWorking)}");
+                        writer.Write($"\t{Convert.ToInt32(sensor.IsWorking)}");
                     }
 
-                    for (int i = 0; i < s; i++)
+                    foreach (double qs in qValues)
                     {
-                        System.Diagnostics.Debug.WriteLine($"q{i + 1}: {qValues[i]}");
-                        writer.Write($"\t{Math.Round(qValues[i],2)}");
+                        writer.Write($"\t{Math.Round(qs, 2)}");
                     }
                     writer.WriteLine("");
 
@@ -411,66 +428,41 @@ namespace CCS
             {
                 System.Diagnostics.Debug.WriteLine($"Error writing file: {ex.Message}");
             }
-
         }
 
-    
-
-        //Convert.ToInt32(sensor.IsWorking)
-        static double CalculateCoverage(List<Sensor> sensors)
+/*
+        Returns every Points that is in range of active sensors without repeating of points
+*/
+        static List<Point> GetPointInActiveAreas(List<Sensor> sensors)
         {
-            int poiMonitored = 0;
+            List<Point> PoIsInActiveSensors = new List<Point>();
 
-            foreach (Sensor sensor in sensors)
-            {
-                if (Convert.ToInt32(sensor.IsWorking) == 1) // Assuming state 1 means the sensor is ON
-                {
-                    poiMonitored++;
-                }
-            }
+            foreach (var sensor in sensors)
+                if (sensor.IsWorking)
+                    PoIsInActiveSensors.AddRange(sensor.PoIs);
 
-            return (double)poiMonitored / sensors.Count;
+            return PoIsInActiveSensors.Distinct().ToList();
         }
 
-        static List<double> CalculateNormalizedQValues(List<Sensor> sensors, double coverage)
+
+/*
+        Returns every q values for specific sensor
+*/
+        static List<double> CalculateNormalizedQValues(List<Sensor> sensors, List<Point> PoIInActiveArea)
         {
             List<double> qValues = new List<double>();
 
             foreach (Sensor sensor in sensors)
             {
-                double qValue = CalculateQValueForSensor(sensor, sensors, coverage);
-                qValues.Add(qValue);
+                List<Point> poIActiveInYourArea = sensor.PoIs.Intersect(PoIInActiveArea).ToList();
+                qValues.Add((double)poIActiveInYourArea.Count/(double)sensor.PoIs.Count);
             }
-
             return qValues;
         }
 
-        static double CalculateQValueForSensor(Sensor targetSensor, List<Sensor> sensors, double coverage)
+        static double CalculateDistance(double x1, double y1, double x2, double y2)
         {
-            double qValue = 0.0;
-
-            foreach (Sensor otherSensor in sensors)
-            {
-                if (otherSensor != targetSensor)
-                {
-                    double distance = CalculateDistance(targetSensor, otherSensor);
-                    qValue += Convert.ToInt32(otherSensor.IsWorking) / (distance + double.Epsilon); // Add epsilon to avoid division by zero
-                }
-            }
-
-            if (coverage <= 0.0)
-            {
-                return 0;
-            }
-            else
-            {
-                return qValue / coverage;
-            }
-        }
-
-        static double CalculateDistance(Sensor sensor1, Sensor sensor2)
-        {
-            return Math.Sqrt(Math.Pow(sensor1.X - sensor2.X, 2) + Math.Pow(sensor1.Y - sensor2.Y, 2));
+            return Math.Sqrt(Math.Pow(x2 - x1, 2) + Math.Pow(y2 - y1, 2));
         }
     }
 }

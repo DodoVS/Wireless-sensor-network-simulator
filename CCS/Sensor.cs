@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Windows;
 
 namespace CCS
 {
@@ -12,6 +8,7 @@ namespace CCS
         public double Y { get; set; }
         public int Index { get; set; }
         public bool IsWorking { get;  set; }
+        public List<Point> PoIs { get; set; }
 
         public Sensor(double x, double y) {
             X = x;
