@@ -692,7 +692,7 @@ namespace CCS
                     foreach (var kvp in sensorNeighborsMap)
                     {
                         System.Diagnostics.Debug.WriteLine($"Sensor {kvp.Key}: Neighbors = [{string.Join(", ", kvp.Value)}]");
-                        writer.WriteLine($"{kvp.Key}'\t'{kvp.Value.Count()}'\t'{ string.Join(", ", kvp.Value)}");
+                        writer.WriteLine($"{kvp.Key}\t{kvp.Value.Count()}\t{ string.Join(", ", kvp.Value)}");
                     }
                     writer.WriteLine("");
 
@@ -711,6 +711,81 @@ namespace CCS
 
             return Math.Sqrt(deltaX * deltaX + deltaY * deltaY);
         }
+
+
+        private void Find_Sensor_Rank_click(object sender, RoutedEventArgs e)
+        {
+
+            var numberOfSensors = Sensors.Count.ToString();
+
+
+            string filepath = "INIT-RESULTS/rank WSN-";
+            filepath += Sensors.Count.ToString() + "-"; ;
+            filepath += "r" + sensorRange.ToString() + ".txt";
+
+            try
+            {
+                using (StreamWriter writer = new StreamWriter(filepath))
+                {
+
+
+                    // Write parameters of run
+                    writer.WriteLine("#Parameters of run:");
+                    writer.WriteLine($"#Number of Sensors {numberOfSensors}");
+                    writer.WriteLine($"#POI: {this.numSectors}");
+                    writer.WriteLine($"#Sensor from file: {sensorFile}");
+                    writer.WriteLine($"#initialSensorProbablityOn: {sensorProbability}");
+                    writer.WriteLine($"#activateSensorsRandomly: {isRadomly}");
+                    writer.WriteLine($"#Sensor Range: {sensorRange}");
+                    writer.WriteLine($"#Sensor for file: {filepath}.txt");
+
+                    // Write header
+                    writer.WriteLine("#id\tnum_of_neigh\tid-of_neighbors");
+
+                    // Write data
+
+                    // Create a dictionary to store neighbors for each sensor  
+                    Dictionary<int, List<double>> sensorRankMap = new Dictionary<int, List<double>>();
+
+                    // Iterate through each sensor and find neighbors
+                    foreach (var sensor in Sensors)
+                    {
+                        int sensorId = sensor.Index;
+                        sensorRankMap[sensorId] = new List<double>();
+
+                        foreach (var otherSensor in Sensors)
+                        {
+                            if (otherSensor.Index != sensorId)
+                            {
+
+                                double distance = CalculateDistance(sensor, otherSensor);
+                                System.Diagnostics.Debug.WriteLine($"ID other:{otherSensor.Index} ID:{sensorId} Distance:{distance} RANGE:{sensorRange}");
+
+                                if (distance <= sensorRange * 2)
+                                {
+                                    sensorRankMap[sensorId].Add(Math.Round(distance /(2*sensorRange),2));
+                                }
+                            }
+                        }
+                    }
+
+                    // Display the results
+                    foreach (var kvp in sensorRankMap)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Sensor {kvp.Key}: Neighbors = [{string.Join(", ", kvp.Value)}]");
+                        writer.WriteLine($"{kvp.Key}\t{kvp.Value.Count()}\t{string.Join(", ", kvp.Value)}");
+                    }
+                    writer.WriteLine("");
+
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error writing file: {ex.Message}");
+            }
+        }
+
+     
 
     }
 }
