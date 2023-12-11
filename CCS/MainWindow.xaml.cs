@@ -792,7 +792,8 @@ namespace CCS
            int individualId = 0;
            int generation = 0;
            bool isDebug = true;
-           
+           bool f1 = true;
+           Dictionary<string, double> individualDict;
            if (!isDebug)
            {
                return;
@@ -812,27 +813,32 @@ namespace CCS
                Debug.WriteLine(permutation);
            }
 
-           CalculateFunctionF1(permutations);
+           if (f1)
+           {
+               individualDict = CalculateFunctionF1(permutations, requestedCoverage);
+               
+           }
+           
 
         }
 
-        private void CalculateFunctionF1(List<String> permutations)
+        private Dictionary<string, double> CalculateFunctionF1(List<String> permutations, double requestedCoverage)
         {
-            AssignPoIToSensors();
+            Dictionary<string, double> individual = new Dictionary<string, double>();
 
 
 
             List<Point> PoIInActiveArea = GetPointInActiveAreas(Sensors);
             foreach (string permutation in permutations)
             {
-                string individual;
-                individual = permutation;
                 
+                int numberOfTurnedOnSensors = 0;
 
                 for (int i = 0; i < Sensors.Count; i++)
                 {
                     Sensors[i].IsWorking = permutation[i] == '1';
                 }
+                AssignPoIToSensors();
 
                 double q = (double)PoIInActiveArea.Count / (double)POIs.Count;
                 List<double> qValues = CalculateNormalizedQValues(Sensors, PoIInActiveArea);
@@ -850,9 +856,26 @@ namespace CCS
                 }
 
                 Debug.WriteLine("");
+                foreach (Sensor sensor in Sensors)
+                {
+                    if (sensor.IsWorking)
+                    {
+                        numberOfTurnedOnSensors++;
+                    }
+                }
 
+                if (q >= requestedCoverage)
+                {
+                    individual.Add(permutation, numberOfTurnedOnSensors * (q - requestedCoverage));
+                }
+                else
+                {
+                    individual.Add(permutation, (Sensors.Count - numberOfTurnedOnSensors) * (requestedCoverage - q));
+                }
 
             }
+
+            return individual;
 
         }
 
