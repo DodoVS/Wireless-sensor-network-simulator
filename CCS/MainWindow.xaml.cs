@@ -692,7 +692,7 @@ namespace CCS
                     foreach (var kvp in sensorNeighborsMap)
                     {
                         System.Diagnostics.Debug.WriteLine($"Sensor {kvp.Key}: Neighbors = [{string.Join(", ", kvp.Value)}]");
-                        writer.WriteLine($"{kvp.Key}\t{kvp.Value.Count()}\t{ string.Join(", ", kvp.Value)}");
+                        writer.WriteLine($"\t{kvp.Key}\t{kvp.Value.Count()}\t{ string.Join(" ", kvp.Value)}");
                     }
                     writer.WriteLine("");
 
@@ -772,8 +772,8 @@ namespace CCS
                     // Display the results
                     foreach (var kvp in sensorRankMap)
                     {
-                        System.Diagnostics.Debug.WriteLine($"Sensor {kvp.Key}: Neighbors = [{string.Join(", ", kvp.Value)}]");
-                        writer.WriteLine($"{kvp.Key}\t{kvp.Value.Count()}\t{string.Join(", ", kvp.Value)}");
+                        System.Diagnostics.Debug.WriteLine($"Sensor {kvp.Key}: Neighbors = [{string.Join(" ", kvp.Value)}]");
+                        writer.WriteLine($"\t{kvp.Key}\t{kvp.Value.Count()}\t{string.Join(" ", kvp.Value)}");
                     }
                     writer.WriteLine("");
 
