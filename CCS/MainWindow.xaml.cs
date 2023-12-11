@@ -785,7 +785,111 @@ namespace CCS
             }
         }
 
-     
+        private void Gui2Function(object sender, RoutedEventArgs e)
+        { 
+           double requestedCoverage = 0.8;
+           int numberPermutations = 0;
+           int individualId = 0;
+           int generation = 0;
+           bool isDebug = true;
+           
+           if (!isDebug)
+           {
+               return;
+           }
+
+           if (Sensors.Count >= 12)
+           {
+               return;
+           }
+
+           List<string> permutations =  GeneratePermutations();
+
+           numberPermutations = permutations.Count;
+           Debug.WriteLine("Number of permutations: {0}", numberPermutations);
+           foreach (string permutation in permutations)
+           {
+               Debug.WriteLine(permutation);
+           }
+
+           CalculateFunctionF1(permutations);
+
+        }
+
+        private void CalculateFunctionF1(List<String> permutations)
+        {
+            AssignPoIToSensors();
+
+
+
+            List<Point> PoIInActiveArea = GetPointInActiveAreas(Sensors);
+            foreach (string permutation in permutations)
+            {
+                string individual;
+                individual = permutation;
+                
+
+                for (int i = 0; i < Sensors.Count; i++)
+                {
+                    Sensors[i].IsWorking = permutation[i] == '1';
+                }
+
+                double q = (double)PoIInActiveArea.Count / (double)POIs.Count;
+                List<double> qValues = CalculateNormalizedQValues(Sensors, PoIInActiveArea);
+
+                System.Diagnostics.Debug.WriteLine($"q: {q}");
+                Debug.WriteLine($"{Math.Round(q, 2)}");
+                foreach (Sensor sensor in Sensors)
+                {
+                    Debug.WriteLine($"\t{Convert.ToInt32(sensor.IsWorking)}");
+                }
+
+                foreach (double qs in qValues)
+                {
+                    Debug.WriteLine($"\t{Math.Round(qs, 2)}");
+                }
+
+                Debug.WriteLine("");
+
+
+            }
+
+        }
+
+        private  List<string> GeneratePermutations()
+        {
+           
+                // Create a list to store the permutations
+                List<string> permutations = new List<string>();
+
+                // Generate all permutations of zeros and ones
+                foreach (int i in Enumerable.Range(0, 1 << Sensors.Count))
+                {
+                    StringBuilder permutation = new StringBuilder();
+
+                    for (int j = 0; j < Sensors.Count; j++)
+                    {
+                        if ((i & (1 << j)) != 0)
+                        {
+                            permutation.Append('1');
+                        }
+                        else
+                        {
+                            permutation.Append('0');
+                        }
+                    }
+
+                    permutations.Add(permutation.ToString());
+                }
+
+                // Return the list of permutations
+                return permutations;
+         
+        }
+
+
+
+
 
     }
 }
