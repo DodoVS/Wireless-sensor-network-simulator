@@ -1,0 +1,233 @@
+﻿<Window x:Class="CCS.GUI2Window"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CCS"
+        mc:Ignorable="d"
+        Title="GUI2Window" Height="644" Width="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*" />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+            </Grid.RowDefinitions>
+            <StackPanel Orientation="Vertical" Margin="5">
+                <Label FontWeight="Bold">GA parameters</Label>
+                <Grid Margin="5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="10*"/>
+                        <ColumnDefinition Width="7*"/>
+                        <ColumnDefinition Width="7*"/>
+                        <ColumnDefinition Width="7*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <Label Grid.Column="0" Grid.Row="0" Margin="0">pop size M</Label>
+                    <Label Grid.Column="0" Grid.Row="1" Margin="0">num of gen L</Label>
+                    <Label Grid.Column="0" Grid.Row="2" Margin="0">n on min</Label>
+                    <Label Grid.Column="0" Grid.Row="3" Margin="0">short wind size</Label>
+                    <Label Grid.Column="0" Grid.Row="4" Margin="0">q req</Label>
+                    <TextBox Grid.Column="1" Grid.Row="0" x:Name="PopSizeM"  PreviewTextInput="TextBox_PreviewNumbersOnly" TextChanged="SensorProbability_TextChanged" ></TextBox>
+                    <TextBox Grid.Column="1" Grid.Row="1" x:Name="NumOfGenL"  PreviewTextInput="TextBox_PreviewNumbersOnly" TextChanged="SensorProbability_TextChanged" ></TextBox>
+                    <TextBox Grid.Column="1" Grid.Row="2" x:Name="NOnMin"  PreviewTextInput="TextBox_PreviewNumbersOnly" TextChanged="SensorProbability_TextChanged" ></TextBox>
+                    <TextBox Grid.Column="1" Grid.Row="3" x:Name="ShortWindSize"  PreviewTextInput="TextBox_PreviewNumbersOnly" TextChanged="SensorProbability_TextChanged" ></TextBox>
+                    <TextBox Grid.Column="1" Grid.Row="4" x:Name="QReq"  PreviewTextInput="TextBox_PreviewNumbersOnly" TextChanged="SensorProbability_TextChanged" ></TextBox>
+                    <Label Grid.Column="2" Grid.Row="1" Margin="0" HorizontalAlignment="Right">delta L</Label>
+                    <Label Grid.Column="2" Grid.Row="2" Margin="0" HorizontalAlignment="Right">n on max</Label>
+                    <TextBox Grid.Column="3" Grid.Row="1" x:Name="DeltaL"  PreviewTextInput="TextBox_PreviewNumbersOnly" TextChanged="SensorProbability_TextChanged" ></TextBox>
+                    <TextBox Grid.Column="3" Grid.Row="2" x:Name="NOnMax"  PreviewTextInput="TextBox_PreviewNumbersOnly" TextChanged="SensorProbability_TextChanged" ></TextBox>
+                </Grid>
+            </StackPanel>
+            <StackPanel Grid.Row="1" Margin="5">
+                <Label FontWeight="Bold">Function</Label>
+                <Grid Margin="20,0,20,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <RadioButton Grid.Column="0" Content="f1" GroupName="Function" Checked="Function_Checked" />
+                    <RadioButton Grid.Column="1" Content="f2" GroupName="Function" Checked="Function_Checked" />
+                </Grid>
+                <Grid Margin="20,05,20,0" HorizontalAlignment="Center" >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <Label Grid.Column="0" Grid.Row="1">C</Label>
+                    <Label Grid.Column="0" Grid.Row="2">D</Label>
+                    <Label Grid.Column="1" Grid.Row="0" HorizontalContentAlignment="Center">No</Label>
+                    <TextBox Grid.Column="1" Grid.Row="1" Width="50" Margin="2" x:Name="CNo"  PreviewTextInput="TextBox_PreviewNumbersOnly" TextChanged="SensorProbability_TextChanged" ></TextBox>
+                    <TextBox Grid.Column="1" Grid.Row="2" Width="50" Margin="2" x:Name="DNo"  PreviewTextInput="TextBox_PreviewNumbersOnly" TextChanged="SensorProbability_TextChanged" ></TextBox>
+                    <Label Grid.Column="2" Grid.Row="0" HorizontalContentAlignment="Center">Yes</Label>
+                    <TextBox Grid.Column="2" Grid.Row="1" Width="50" Margin="2" x:Name="CYes"  PreviewTextInput="TextBox_PreviewNumbersOnly" TextChanged="SensorProbability_TextChanged" ></TextBox>
+                    <TextBox Grid.Column="2" Grid.Row="2" Width="50" Margin="2" x:Name="DYes"  PreviewTextInput="TextBox_PreviewNumbersOnly" TextChanged="SensorProbability_TextChanged" ></TextBox>
+                </Grid>
+            </StackPanel>
+            <StackPanel Grid.Row="2" Margin="5">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Label Grid.Column="0" Grid.Row="0" FontWeight="Bold">GA search: (q n__on)</Label>
+                    <Label Grid.Column="1" Grid.Row="0" FontWeight="Bold">AIS search: q, m__on=const</Label>
+                    <StackPanel Grid.Column="0" Grid.Row="1">
+                        <StackPanel Orientation="Horizontal" >
+                            <CheckBox x:Name="elilistStreetHillclimbing" VerticalAlignment="Center"/>
+                            <Label>elilist street + hillclimbing</Label>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <Label>tourname__size corssover</Label>
+                                <TextBox Grid.Column="1" Grid.Row="0" Width="50" Margin="2" x:Name="TournameSize" PreviewTextInput="TextBox_PreviewNumbersOnly" TextChanged="SensorProbability_TextChanged" ></TextBox>
+                                <Label Grid.Column="0" Grid.Row="1">candidate__size</Label>
+                                <TextBox Grid.Column="1" Grid.Row="1" Width="50" Margin="2" x:Name="CandidateSize" PreviewTextInput="TextBox_PreviewNumbersOnly" TextChanged="SensorProbability_TextChanged" ></TextBox>
+                            </Grid>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <RadioButton Margin="0,0,6,0" Content="type 1" GroupName="CandidateType" Checked="CandidateType_Checked" />
+                            <RadioButton Margin="0,0,6,0" Content="type 2" GroupName="CandidateType" Checked="CandidateType_Checked" />
+                            <RadioButton Content="type 3" GroupName="CandidateType" Checked="CandidateType_Checked" />
+                        </StackPanel>
+                        <Label>mutation</Label>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <RadioButton Margin="0,0,6,0" Content="type 1" GroupName="MutationType" Checked="MutationType_Checked" />
+                            <RadioButton Margin="0,0,6,0" Content="type 2" GroupName="MutationType" Checked="MutationType_Checked" />
+                            <RadioButton Content="type 3" GroupName="MutationType" Checked="MutationType_Checked" />
+                        </StackPanel>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Grid.Row="1" Margin="2,0,0,0">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <Label Grid.Column="0" Grid.Row="0" Width="139">
+                                    <AccessText TextWrapping="WrapWithOverflow">children__pop__size hypermutation
+                                    </AccessText>
+                                </Label>
+                                <TextBox Grid.Column="1" Grid.Row="0" Width="50" Height="22" Margin="2" x:Name="ChildrenPopSize" PreviewTextInput="TextBox_PreviewNumbersOnly" TextChanged="SensorProbability_TextChanged" ></TextBox>
+                                <Label Grid.Column="0" Grid.Row="1">a</Label>
+                                <TextBox Grid.Column="1" Grid.Row="1" Width="50" Margin="2" x:Name="A" PreviewTextInput="TextBox_PreviewNumbersOnly" TextChanged="SensorProbability_TextChanged" ></TextBox>
+                            </Grid>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <RadioButton Margin="0,0,6,0" Content="type 1" GroupName="ChildernPopSizeType" Checked="ChildernPopSizeType_Checked" />
+                            <RadioButton Margin="0,0,6,0" Content="type 2" GroupName="ChildernPopSizeType" Checked="ChildernPopSizeType_Checked" />
+                            <RadioButton Content="type 3" GroupName="ChildernPopSizeType" Checked="ChildernPopSizeType_Checked" />
+                        </StackPanel>
+                        <Label>highclimbing</Label>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <RadioButton Margin="0,0,6,0" Content="type 1" GroupName="HighclimbingType" Checked="HighclimbingType_Checked" />
+                            <RadioButton Margin="0,0,6,0" Content="type 2" GroupName="HighclimbingType" Checked="HighclimbingType_Checked" />
+                            <RadioButton Content="type 3" GroupName="HighclimbingType" Checked="HighclimbingType_Checked" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <Label Grid.Column="0" Grid.Row="0" Width="139">num__of__gen__L1</Label>
+                                <TextBox Grid.Column="1" Grid.Row="0" Width="50" Height="22" Margin="2" x:Name="NumGen1" PreviewTextInput="TextBox_PreviewNumbersOnly" TextChanged="SensorProbability_TextChanged" ></TextBox>
+                            </Grid>
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+            </StackPanel>
+            <StackPanel Grid.Row="3" Margin="5,15,5,0">
+                <Grid Grid.Row="4">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*" />
+                        <ColumnDefinition Width="1*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <StackPanel Grid.Column="0" Grid.Row="0">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Label Grid.Column="0" Grid.Row="0" HorizontalAlignment="Right">multiruns</Label>
+                            <TextBox Grid.Column="1" Grid.Row="0" Width="70" Height="22" Margin="2" x:Name="Multiruns" PreviewTextInput="TextBox_PreviewNumbersOnly" TextChanged="SensorProbability_TextChanged" ></TextBox>
+                            <Label Grid.Column="0" Grid.Row="1" HorizontalAlignment="Right">seed</Label>
+                            <TextBox Grid.Column="1" Grid.Row="1" Width="70" Height="22" Margin="2" x:Name="seed" PreviewTextInput="TextBox_PreviewNumbersOnly" TextChanged="SensorProbability_TextChanged" ></TextBox>
+                        </Grid>
+                    </StackPanel>
+                    <Button Grid.Column="1" Grid.Row="0" Width="50" Height="20" Click="Start_Click">START</Button>
+                    <Button Grid.Column="0" Grid.Row="2" Width="50" Height="20" Click="Start_Click">Back</Button>
+                    <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <RadioButton  Content="debug 1" GroupName="DebugType" Checked="DebugType_Checked" />
+                        <RadioButton  Content="debug 2" GroupName="DebugType" Checked="DebugType_Checked" />
+                        <RadioButton  Content="debug 3" GroupName="DebugType" Checked="DebugType_Checked" />
+                    </StackPanel>
+                </Grid>
+            </StackPanel>
+        </Grid>
+        <StackPanel Grid.Column="1">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Viewbox Stretch="Fill" Grid.Row="0" ClipToBounds="True" Margin="0,0,0,4">
+                    <Canvas x:Name="myCanvas" Height="78" Width="100">
+                        <Canvas.LayoutTransform>
+                            <ScaleTransform ScaleY="-1"/>
+                        </Canvas.LayoutTransform>
+                    </Canvas>
+                </Viewbox>
+                <Viewbox Stretch="Fill" Grid.Row="1" ClipToBounds="True">
+                    <Canvas x:Name="myCanvas1" Height="78" Width="100">
+                        <Canvas.LayoutTransform>
+                            <ScaleTransform ScaleY="-1"/>
+                        </Canvas.LayoutTransform>
+                    </Canvas>
+                </Viewbox>
+            </Grid>
+        </StackPanel>
+    </Grid>
+</Window>
