@@ -60,3 +60,7 @@ F:\Studia\CCS\WSN\CCS\obj\Debug\net8.0-windows\refint\CCS.dll
 F:\Studia\CCS\WSN\CCS\obj\Debug\net8.0-windows\CCS.pdb
 F:\Studia\CCS\WSN\CCS\obj\Debug\net8.0-windows\CCS.genruntimeconfig.cache
 F:\Studia\CCS\WSN\CCS\obj\Debug\net8.0-windows\ref\CCS.dll
+C:\Users\Damian\Desktop\projekt\Wireless-sensor-network-simulator\CCS\obj\Debug\net8.0-windows\GUI2Window.g.cs
+C:\Users\Damian\Desktop\projekt\Wireless-sensor-network-simulator\CCS\obj\Debug\net8.0-windows\GUI2Window.baml
+C:\Users\Damian\Desktop\projekt\Wireless-sensor-network-simulator\CCS\obj\Debug\net8.0-windows\GUI1Window.g.cs
+C:\Users\Damian\Desktop\projekt\Wireless-sensor-network-simulator\CCS\obj\Debug\net8.0-windows\GUI1Window.baml

@@ -2,7 +2,7 @@
 
 namespace CCS
 {
-    internal class Sensor
+    public class Sensor
     {
         public double X { get; set; }
         public double Y { get; set; }
