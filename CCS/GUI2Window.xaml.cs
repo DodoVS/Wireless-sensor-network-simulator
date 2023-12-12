@@ -1,4 +1,6 @@
 ﻿using System.Diagnostics;
+using System.Globalization;
+using System.IO;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -16,6 +18,7 @@ namespace CCS
         public List<Point> POIs;
         public List<Sensor> Sensors;
         private double sensorRange = 0.0;
+        private List<Individual> Individuals;
 
         public GUI2Window(MainWindow window)
         {
@@ -65,12 +68,6 @@ namespace CCS
                 }
             }
 
-        }
-
-        private void ClearPoIInSensors()
-        {
-            foreach (var sensor in Sensors)
-                sensor.PoIs = new List<Point>();
         }
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
@@ -141,50 +138,49 @@ namespace CCS
             return Math.Sqrt(Math.Pow(x2 - x1, 2) + Math.Pow(y2 - y1, 2));
         }
 
-        private void Gui2Function(object sender, RoutedEventArgs e)
+        private void StartButton_Click(object sender, RoutedEventArgs e)
         {
-            double requestedCoverage = 0.8;
+            NumberFormatInfo provider = new NumberFormatInfo();
+            provider.NumberDecimalSeparator = ".";
+            provider.NumberGroupSeparator = ",";
+
+            // it needs provider because PL-pl convertion
+            double requestedCoverage = Convert.ToDouble(QReq.Text, provider);
+
+
             int numberPermutations = 0;
             int individualId = 0;
             int generation = 0;
-            bool isDebug = true;
-            bool f1 = true;
-            Dictionary<string, double> individualDict;
-            if (!isDebug)
+
+            if ((bool)Debug1.IsChecked)
             {
-                return;
+                if (Sensors.Count >= 12)
+                {
+                    return;
+                }
+
+                List<string> permutations = GeneratePermutations();
+
+                numberPermutations = permutations.Count;
+                Debug.WriteLine("Number of permutations: {0}", numberPermutations);
+                foreach (string permutation in permutations)
+                {
+                    Debug.WriteLine(permutation);
+                }
+
+                if ((bool)F1.IsChecked)
+                {
+                    Individuals = CalculateFunctionF1(permutations, requestedCoverage);
+                    saveAllF1(Individuals);
+
+                }
             }
-
-            if (Sensors.Count >= 12)
-            {
-                return;
-            }
-
-            List<string> permutations = GeneratePermutations();
-
-            numberPermutations = permutations.Count;
-            Debug.WriteLine("Number of permutations: {0}", numberPermutations);
-            foreach (string permutation in permutations)
-            {
-                Debug.WriteLine(permutation);
-            }
-
-            if (f1)
-            {
-                individualDict = CalculateFunctionF1(permutations, requestedCoverage);
-
-            }
-
-
         }
 
-        private Dictionary<string, double> CalculateFunctionF1(List<String> permutations, double requestedCoverage)
+        private List<Individual> CalculateFunctionF1(List<String> permutations, double requestedCoverage)
         {
-            Dictionary<string, double> individual = new Dictionary<string, double>();
+            List<Individual> individuals = new List<Individual>();
 
-
-
-            List<Point> PoIInActiveArea = GetPointInActiveAreas(Sensors);
             foreach (string permutation in permutations)
             {
 
@@ -195,7 +191,7 @@ namespace CCS
                     Sensors[i].IsWorking = permutation[i] == '1';
                 }
                 AssignPoIToSensors();
-
+                List<Point> PoIInActiveArea = GetPointInActiveAreas(Sensors);
                 double q = (double)PoIInActiveArea.Count / (double)POIs.Count;
                 List<double> qValues = CalculateNormalizedQValues(Sensors, PoIInActiveArea);
 
@@ -222,17 +218,18 @@ namespace CCS
 
                 if (q >= requestedCoverage)
                 {
-                    individual.Add(permutation, numberOfTurnedOnSensors * (q - requestedCoverage));
+                    Individual individual = new Individual(permutation, numberOfTurnedOnSensors, q, numberOfTurnedOnSensors * (q - requestedCoverage));
+                    individuals.Add(individual);
                 }
                 else
                 {
-                    individual.Add(permutation, (Sensors.Count - numberOfTurnedOnSensors) * (requestedCoverage - q));
+                    Individual individual = new Individual(permutation, numberOfTurnedOnSensors, q, (Sensors.Count - numberOfTurnedOnSensors) * (requestedCoverage - q));
+                    individuals.Add(individual);
                 }
 
             }
 
-            return individual;
-
+            return individuals;
         }
 
         private List<string> GeneratePermutations()
@@ -266,5 +263,52 @@ namespace CCS
 
         }
 
+
+        private void saveAllF1(List<Individual> individuals)
+        {
+
+            var numberOfSensors = Sensors.Count.ToString();
+
+
+            string filepath = "INIT-RESULTS/ALL_F1.txt";
+
+            try
+            {
+                using (StreamWriter writer = new StreamWriter(filepath))
+                {
+
+                    writer.Write("#\t");
+                    for (int i = 1; i < (Sensors.Count + 5); i++)
+                    {
+                        writer.Write($"{i}\t");
+                    }
+
+                    writer.WriteLine("");
+                    writer.Write("#\tid\tq\tn_on\tf1\t");
+                    for (int i = 0; i < Sensors.Count; i++)
+                    {
+                        writer.Write($"s{i + 1}\t");
+                    }
+                    writer.WriteLine("");
+                    int id = 0;
+
+                    foreach (var indi in individuals)
+                    {
+
+                        writer.Write($"\t{id}\t{Math.Round(indi.Coverage, 2)}\t{indi.NumberOfTurnedOnSensors}\t{Math.Round(indi.F1_result, 2)}\t");
+                        for (int i = 0; i < Sensors.Count; i++)
+                        {
+                            writer.Write($"{indi.Permutation[i]}\t");
+                        }
+                        writer.WriteLine();
+                        id++;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error writing file: {ex.Message}");
+            }
+        }
     }
 }

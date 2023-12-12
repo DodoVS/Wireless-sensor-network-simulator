@@ -57,8 +57,8 @@
                         <ColumnDefinition />
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
-                    <RadioButton Grid.Column="0" Content="f1" GroupName="Function" />
-                    <RadioButton Grid.Column="1" Content="f2" GroupName="Function" />
+                    <RadioButton x:Name="F1" Grid.Column="0" Content="f1" GroupName="Function" />
+                    <RadioButton x:Name="F2"  Grid.Column="1" Content="f2" GroupName="Function" />
                 </Grid>
                 <Grid Margin="20,05,20,0" HorizontalAlignment="Center" >
                     <Grid.ColumnDefinitions>
@@ -196,12 +196,12 @@
                             <TextBox Grid.Column="1" Grid.Row="1" Width="70" Height="22" Margin="2" x:Name="seed" PreviewTextInput="TextBox_PreviewNumbersOnly"></TextBox>
                         </Grid>
                     </StackPanel>
-                    <Button Grid.Column="1" Grid.Row="0" Width="50" Height="20">START</Button>
+                    <Button Grid.Column="1" Grid.Row="0" Width="50" Height="20" Click="StartButton_Click">START</Button>
                     <Button Grid.Column="0" Grid.Row="2" Width="50" Height="20" Click="BackButton_Click">Back</Button>
                     <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">
-                        <RadioButton  Content="debug 1" GroupName="DebugType"  />
-                        <RadioButton  Content="debug 2" GroupName="DebugType"  />
-                        <RadioButton  Content="debug 3" GroupName="DebugType"  />
+                        <CheckBox x:Name="Debug1"  Content="debug 1"/>
+                        <CheckBox x:Name="Debug2"  Content="debug 2" />
+                        <CheckBox x:Name="Debug3"  Content="debug 3" />
                     </StackPanel>
                 </Grid>
             </StackPanel>
