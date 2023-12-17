@@ -39,15 +39,15 @@
                     <Label Grid.Column="0" Grid.Row="2" Margin="0">n on min</Label>
                     <Label Grid.Column="0" Grid.Row="3" Margin="0">short wind size</Label>
                     <Label Grid.Column="0" Grid.Row="4" Margin="0">q req</Label>
-                    <TextBox Grid.Column="1" Grid.Row="0" x:Name="PopSizeM" PreviewTextInput="TextBox_PreviewNumbersOnly"></TextBox>
-                    <TextBox Grid.Column="1" Grid.Row="1" x:Name="NumOfGenL" PreviewTextInput="TextBox_PreviewNumbersOnly"></TextBox>
-                    <TextBox Grid.Column="1" Grid.Row="2" x:Name="NOnMin" PreviewTextInput="TextBox_PreviewNumbersOnly"></TextBox>
-                    <TextBox Grid.Column="1" Grid.Row="3" x:Name="ShortWindSize" PreviewTextInput="TextBox_PreviewNumbersOnly"></TextBox>
-                    <TextBox Grid.Column="1" Grid.Row="4" x:Name="QReq" PreviewTextInput="TextBox_PreviewNumbersOnly"></TextBox>
+                    <TextBox Grid.Column="1" Grid.Row="0" Text="100" x:Name="PopSizeM" PreviewTextInput="TextBox_PreviewNumbersOnly"></TextBox>
+                    <TextBox Grid.Column="1" Grid.Row="1" Text="150" x:Name="NumOfGenL" PreviewTextInput="TextBox_PreviewNumbersOnly"></TextBox>
+                    <TextBox Grid.Column="1" Grid.Row="2" Text="3" x:Name="NOnMin" PreviewTextInput="TextBox_PreviewNumbersOnly"></TextBox>
+                    <TextBox Grid.Column="1" Grid.Row="3" Text="3" x:Name="ShortWindSize" PreviewTextInput="TextBox_PreviewNumbersOnly"></TextBox>
+                    <TextBox Grid.Column="1" Grid.Row="4" Text="0.80" x:Name="QReq" PreviewTextInput="TextBox_PreviewNumbersOnly"></TextBox>
                     <Label Grid.Column="2" Grid.Row="1" Margin="0" HorizontalAlignment="Right" PreviewTextInput="TextBox_PreviewNumbersOnly">delta L</Label>
                     <Label Grid.Column="2" Grid.Row="2" Margin="0" HorizontalAlignment="Right" PreviewTextInput="TextBox_PreviewNumbersOnly">n on max</Label>
-                    <TextBox Grid.Column="3" Grid.Row="1" x:Name="DeltaL" PreviewTextInput="TextBox_PreviewNumbersOnly"></TextBox>
-                    <TextBox Grid.Column="3" Grid.Row="2" x:Name="NOnMax" PreviewTextInput="TextBox_PreviewNumbersOnly"></TextBox>
+                    <TextBox Grid.Column="3" Grid.Row="1" Text="5" x:Name="DeltaL" PreviewTextInput="TextBox_PreviewNumbersOnly"></TextBox>
+                    <TextBox Grid.Column="3" Grid.Row="2" Text="10" x:Name="NOnMax" PreviewTextInput="TextBox_PreviewNumbersOnly"></TextBox>
                 </Grid>
             </StackPanel>
             <StackPanel Grid.Row="1" Margin="5">
@@ -57,7 +57,7 @@
                         <ColumnDefinition />
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
-                    <RadioButton x:Name="F1" Grid.Column="0" Content="f1" GroupName="Function" />
+                    <RadioButton x:Name="F1" IsChecked="True" Grid.Column="0" Content="f1" GroupName="Function" />
                     <RadioButton x:Name="F2"  Grid.Column="1" Content="f2" GroupName="Function" />
                 </Grid>
                 <Grid Margin="20,05,20,0" HorizontalAlignment="Center" >
@@ -74,11 +74,11 @@
                     <Label Grid.Column="0" Grid.Row="1">C</Label>
                     <Label Grid.Column="0" Grid.Row="2">D</Label>
                     <Label Grid.Column="1" Grid.Row="0" HorizontalContentAlignment="Center">No</Label>
-                    <TextBox Grid.Column="1" Grid.Row="1" Width="50" Margin="2" x:Name="CNo" PreviewTextInput="TextBox_PreviewNumbersOnly"></TextBox>
-                    <TextBox Grid.Column="1" Grid.Row="2" Width="50" Margin="2" x:Name="DNo" PreviewTextInput="TextBox_PreviewNumbersOnly"></TextBox>
+                    <TextBox Grid.Column="1" Grid.Row="1" Text="1.00" Width="50" Margin="2" x:Name="CNo" PreviewTextInput="TextBox_PreviewNumbersOnly"></TextBox>
+                    <TextBox Grid.Column="1" Grid.Row="2" Text="0.20" Width="50" Margin="2" x:Name="DNo" PreviewTextInput="TextBox_PreviewNumbersOnly"></TextBox>
                     <Label Grid.Column="2" Grid.Row="0" HorizontalContentAlignment="Center">Yes</Label>
-                    <TextBox Grid.Column="2" Grid.Row="1" Width="50" Margin="2" x:Name="CYes" PreviewTextInput="TextBox_PreviewNumbersOnly"></TextBox>
-                    <TextBox Grid.Column="2" Grid.Row="2" Width="50" Margin="2" x:Name="DYes" PreviewTextInput="TextBox_PreviewNumbersOnly"></TextBox>
+                    <TextBox Grid.Column="2" Grid.Row="1" Text="0.60" Width="50" Margin="2" x:Name="CYes" PreviewTextInput="TextBox_PreviewNumbersOnly"></TextBox>
+                    <TextBox Grid.Column="2" Grid.Row="2" Text="1.20" Width="50" Margin="2" x:Name="DYes" PreviewTextInput="TextBox_PreviewNumbersOnly"></TextBox>
                 </Grid>
             </StackPanel>
             <StackPanel Grid.Row="2" Margin="5">
@@ -109,9 +109,9 @@
                                     <RowDefinition/>
                                 </Grid.RowDefinitions>
                                 <Label>tourname__size corssover</Label>
-                                <TextBox Grid.Column="1" Grid.Row="0" Width="50" Margin="2" x:Name="TournameSize" PreviewTextInput="TextBox_PreviewNumbersOnly"></TextBox>
+                                <TextBox Grid.Column="1" Grid.Row="0" Text="3" Width="50" Margin="2" x:Name="TournameSize" PreviewTextInput="TextBox_PreviewNumbersOnly"></TextBox>
                                 <Label Grid.Column="0" Grid.Row="1">candidate__size</Label>
-                                <TextBox Grid.Column="1" Grid.Row="1" Width="50" Margin="2" x:Name="CandidateSize" PreviewTextInput="TextBox_PreviewNumbersOnly"></TextBox>
+                                <TextBox Grid.Column="1" Grid.Row="1" Text="3" Width="50" Margin="2" x:Name="CandidateSize" PreviewTextInput="TextBox_PreviewNumbersOnly"></TextBox>
                             </Grid>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -141,9 +141,9 @@
                                     <AccessText TextWrapping="WrapWithOverflow">children__pop__size hypermutation
                                     </AccessText>
                                 </Label>
-                                <TextBox Grid.Column="1" Grid.Row="0" Width="50" Height="22" Margin="2" x:Name="ChildrenPopSize" PreviewTextInput="TextBox_PreviewNumbersOnly"></TextBox>
+                                <TextBox Grid.Column="1" Text="50" Grid.Row="0" Width="50" Height="22" Margin="2" x:Name="ChildrenPopSize" PreviewTextInput="TextBox_PreviewNumbersOnly"></TextBox>
                                 <Label Grid.Column="0" Grid.Row="1">a</Label>
-                                <TextBox Grid.Column="1" Grid.Row="1" Width="50" Margin="2" x:Name="A" PreviewTextInput="TextBox_PreviewNumbersOnly"></TextBox>
+                                <TextBox Grid.Column="1" Grid.Row="1" Text="1.0" Width="50" Margin="2" x:Name="A" PreviewTextInput="TextBox_PreviewNumbersOnly"></TextBox>
                             </Grid>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -164,7 +164,7 @@
                                     <ColumnDefinition/>
                                 </Grid.ColumnDefinitions>
                                 <Label Grid.Column="0" Grid.Row="0" Width="139">num__of__gen__L1</Label>
-                                <TextBox Grid.Column="1" Grid.Row="0" Width="50" Height="22" Margin="2" x:Name="NumGen1" PreviewTextInput="TextBox_PreviewNumbersOnly"></TextBox>
+                                <TextBox Grid.Column="1" Grid.Row="0" Text="50" Width="50" Height="22" Margin="2" x:Name="NumGen1" PreviewTextInput="TextBox_PreviewNumbersOnly"></TextBox>
                             </Grid>
                         </StackPanel>
                     </StackPanel>
@@ -191,7 +191,7 @@
                                 <RowDefinition/>
                             </Grid.RowDefinitions>
                             <Label Grid.Column="0" Grid.Row="0" HorizontalAlignment="Right">multiruns</Label>
-                            <TextBox Grid.Column="1" Grid.Row="0" Width="70" Height="22" Margin="2" x:Name="Multiruns" PreviewTextInput="TextBox_PreviewNumbersOnly"></TextBox>
+                            <TextBox Grid.Column="1" Grid.Row="0" Text="1" Width="70" Height="22" Margin="2" x:Name="Multiruns" PreviewTextInput="TextBox_PreviewNumbersOnly"></TextBox>
                             <Label Grid.Column="0" Grid.Row="1" HorizontalAlignment="Right">seed</Label>
                             <TextBox Grid.Column="1" Grid.Row="1" Width="70" Height="22" Margin="2" x:Name="seed" PreviewTextInput="TextBox_PreviewNumbersOnly"></TextBox>
                         </Grid>

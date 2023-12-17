@@ -20,6 +20,11 @@ namespace CCS
             GUI2Window = new GUI2Window(this);
 
             ViewControl.Content = GUI1Window.Content;
+
+            System.Globalization.CultureInfo customCulture = (System.Globalization.CultureInfo)System.Threading.Thread.CurrentThread.CurrentCulture.Clone();
+            customCulture.NumberFormat.NumberDecimalSeparator = ".";
+
+            System.Threading.Thread.CurrentThread.CurrentCulture = customCulture;
         }
 
         private void CreateFolders()

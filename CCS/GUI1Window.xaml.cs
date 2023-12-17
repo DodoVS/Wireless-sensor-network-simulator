@@ -415,7 +415,6 @@ namespace CCS
                     double q = (double)PoIInActiveArea.Count / (double)POIs.Count;
                     List<double> qValues = CalculateNormalizedQValues(Sensors, PoIInActiveArea);
 
-                    System.Diagnostics.Debug.WriteLine($"q: {q}");
                     writer.Write($"{Math.Round(q, 2)}");
                     foreach (Sensor sensor in Sensors)
                     {
@@ -655,7 +654,6 @@ namespace CCS
                             {
 
                                 double distance = CalculateDistance(sensor, otherSensor);
-                                System.Diagnostics.Debug.WriteLine($"ID other:{otherSensor.Index} ID:{sensorId} Distance:{distance} RANGE:{sensorRange}");
 
                                 if (distance <= sensorRange * 2)
                                 {
@@ -668,7 +666,6 @@ namespace CCS
                     // Display the results
                     foreach (var kvp in sensorNeighborsMap)
                     {
-                        System.Diagnostics.Debug.WriteLine($"Sensor {kvp.Key}: Neighbors = [{string.Join(", ", kvp.Value)}]");
                         writer.WriteLine($"\t{kvp.Key}\t{kvp.Value.Count()}\t{string.Join(" ", kvp.Value)}");
                     }
                     writer.WriteLine("");
@@ -736,7 +733,6 @@ namespace CCS
                             {
 
                                 double distance = CalculateDistance(sensor, otherSensor);
-                                System.Diagnostics.Debug.WriteLine($"ID other:{otherSensor.Index} ID:{sensorId} Distance:{distance} RANGE:{sensorRange}");
 
                                 if (distance <= sensorRange * 2)
                                 {
@@ -749,7 +745,6 @@ namespace CCS
                     // Display the results
                     foreach (var kvp in sensorRankMap)
                     {
-                        System.Diagnostics.Debug.WriteLine($"Sensor {kvp.Key}: Neighbors = [{string.Join(" ", kvp.Value)}]");
                         writer.WriteLine($"\t{kvp.Key}\t{kvp.Value.Count()}\t{string.Join(" ", kvp.Value)}");
                     }
                     writer.WriteLine("");

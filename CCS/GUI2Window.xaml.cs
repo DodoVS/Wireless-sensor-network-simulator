@@ -19,6 +19,8 @@ namespace CCS
         public List<Sensor> Sensors;
         private double sensorRange = 0.0;
         private List<Individual> Individuals;
+        private double _CN, _CY, _DN, _DY;
+
 
         public GUI2Window(MainWindow window)
         {
@@ -146,11 +148,18 @@ namespace CCS
 
             // it needs provider because PL-pl convertion
             double requestedCoverage = Convert.ToDouble(QReq.Text, provider);
+            _CN = Convert.ToDouble(CNo.Text, provider);
+            _CY = Convert.ToDouble(CYes.Text, provider);
+            _DN = Convert.ToDouble(DNo.Text, provider);
+            _DY = Convert.ToDouble(DYes.Text, provider);
 
 
+            Individuals = new List<Individual>();
             int numberPermutations = 0;
             int individualId = 0;
             int generation = 0;
+            int windowSize = Convert.ToInt32(NOnMax.Text) - Convert.ToInt32(NOnMin.Text);
+            
 
             if ((bool)Debug1.IsChecked)
             {
@@ -162,74 +171,93 @@ namespace CCS
                 List<string> permutations = GeneratePermutations();
 
                 numberPermutations = permutations.Count;
-                Debug.WriteLine("Number of permutations: {0}", numberPermutations);
-                foreach (string permutation in permutations)
+
+                foreach(string permutation in permutations)
                 {
-                    Debug.WriteLine(permutation);
+                    if ((bool)F1.IsChecked)
+                        Individuals.Add(CalculateFunctionF1(permutation, requestedCoverage));
+                    else
+                        Individuals.Add(CalculateFunctionF2(permutation, requestedCoverage));
                 }
 
                 if ((bool)F1.IsChecked)
-                {
-                    Individuals = CalculateFunctionF1(permutations, requestedCoverage);
                     saveAllF1(Individuals);
-
-                }
+                else
+                    saveRewards(Individuals);
             }
         }
 
-        private List<Individual> CalculateFunctionF1(List<String> permutations, double requestedCoverage)
+        private Individual CalculateFunctionF1(string permutation, double requestedCoverage)
         {
-            List<Individual> individuals = new List<Individual>();
+            int numberOfTurnedOnSensors = 0;
 
-            foreach (string permutation in permutations)
+            for (int i = 0; i < Sensors.Count; i++)
             {
+                Sensors[i].IsWorking = permutation[i] == '1';
+            }
+            AssignPoIToSensors();
+            List<Point> PoIInActiveArea = GetPointInActiveAreas(Sensors);
+            double q = (double)PoIInActiveArea.Count / (double)POIs.Count;
+            List<double> qValues = CalculateNormalizedQValues(Sensors, PoIInActiveArea);
 
-                int numberOfTurnedOnSensors = 0;
+            foreach (Sensor sensor in Sensors)
+            {
+                if (sensor.IsWorking)
+                    numberOfTurnedOnSensors++;
+            }
 
-                for (int i = 0; i < Sensors.Count; i++)
+            if (q >= requestedCoverage)
+                return new Individual(permutation, numberOfTurnedOnSensors, q, q + Sensors.Count - numberOfTurnedOnSensors);
+            else
+                return new Individual(permutation, numberOfTurnedOnSensors, q, q);
+        }
+
+        private Individual CalculateFunctionF2(string permutation, double requestedCoverage)
+        {
+            int sensorId = 0;
+            List<double> localRewards = new List<double>();
+            double avgPayOff = 0;
+            double localCoverage = 0;
+            int numberOfTurnedOnSensors = 0;
+
+            for (int i = 0; i < Sensors.Count; i++)
+            {
+                Sensors[i].IsWorking = permutation[i] == '1';
+            }
+
+            AssignPoIToSensors();
+            List<Point> PoIInActiveArea = GetPointInActiveAreas(Sensors);
+            double globalCoverage = (double)PoIInActiveArea.Count / (double)POIs.Count;
+
+            for(int i=0;i<Sensors.Count; i++)
+            {
+                if (!Sensors[i].IsWorking)
                 {
-                    Sensors[i].IsWorking = permutation[i] == '1';
-                }
-                AssignPoIToSensors();
-                List<Point> PoIInActiveArea = GetPointInActiveAreas(Sensors);
-                double q = (double)PoIInActiveArea.Count / (double)POIs.Count;
-                List<double> qValues = CalculateNormalizedQValues(Sensors, PoIInActiveArea);
-
-                System.Diagnostics.Debug.WriteLine($"q: {q}");
-                Debug.WriteLine($"{Math.Round(q, 2)}");
-                foreach (Sensor sensor in Sensors)
-                {
-                    Debug.WriteLine($"\t{Convert.ToInt32(sensor.IsWorking)}");
-                }
-
-                foreach (double qs in qValues)
-                {
-                    Debug.WriteLine($"\t{Math.Round(qs, 2)}");
-                }
-
-                Debug.WriteLine("");
-                foreach (Sensor sensor in Sensors)
-                {
-                    if (sensor.IsWorking)
-                    {
-                        numberOfTurnedOnSensors++;
-                    }
-                }
-
-                if (q >= requestedCoverage)
-                {
-                    Individual individual = new Individual(permutation, numberOfTurnedOnSensors, q, numberOfTurnedOnSensors * (q - requestedCoverage));
-                    individuals.Add(individual);
+                    List<double> qValues = CalculateNormalizedQValues(Sensors, PoIInActiveArea);
+                    if (qValues[i]>=requestedCoverage)
+                        localRewards.Add(_DY);
+                    else
+                        localRewards.Add(_DN);
                 }
                 else
                 {
-                    Individual individual = new Individual(permutation, numberOfTurnedOnSensors, q, (Sensors.Count - numberOfTurnedOnSensors) * (requestedCoverage - q));
-                    individuals.Add(individual);
+                    Sensors[i].IsWorking = false;
+                    List<Point> newPoIInActiveArea = GetPointInActiveAreas(Sensors);
+                    List<double> qValues = CalculateNormalizedQValues(Sensors, newPoIInActiveArea);
+                    if (qValues[i]>=requestedCoverage)
+                        localRewards.Add(_CY);
+                    else
+                        localRewards.Add(_CN);
+                    Sensors[i].IsWorking = true;
                 }
-
+            }
+            foreach (Sensor sensor in Sensors)
+            {
+                if (sensor.IsWorking)
+                    numberOfTurnedOnSensors++;
             }
 
-            return individuals;
+            return new Individual(permutation, numberOfTurnedOnSensors, globalCoverage, localRewards, false);
         }
 
         private List<string> GeneratePermutations()
@@ -266,10 +294,6 @@ namespace CCS
 
         private void saveAllF1(List<Individual> individuals)
         {
-
-            var numberOfSensors = Sensors.Count.ToString();
-
-
             string filepath = "INIT-RESULTS/ALL_F1.txt";
 
             try
@@ -300,6 +324,90 @@ namespace CCS
                         {
                             writer.Write($"{indi.Permutation[i]}\t");
                         }
+                        writer.WriteLine();
+                        id++;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error writing file: {ex.Message}");
+            }
+        }
+
+        private void saveRewards(List<Individual> individuals)
+        {
+            string filepath = "INIT-RESULTS/REWARD1.txt";
+
+            try
+            {
+                using (StreamWriter writer = new StreamWriter(filepath))
+                {
+
+                    writer.Write("#\t");
+                    for (int i = 1; i <= (Sensors.Count + 4); i++)
+                    {
+                        writer.Write($"{i}\t");
+                    }
+
+                    writer.WriteLine("");
+                    writer.Write("#\tid\tq\tn_on\tf2\t");
+                    for (int i = 0; i < Sensors.Count; i++)
+                    {
+                        writer.Write($"s{i + 1}\t");
+                    }
+                    writer.WriteLine("");
+                    int id = 0;
+
+                    foreach (var indi in individuals)
+                    {
+                        writer.Write($"\t{id}\t{Math.Round(indi.Coverage, 2)}\t{indi.NumberOfTurnedOnSensors}\t{Math.Round(indi.F2_Rewards.Average(), 2)}\t");
+                        for (int i = 0; i < Sensors.Count; i++)
+                        {
+                            writer.Write($"{indi.Permutation[i]}\t");
+                        }
+                        writer.WriteLine();
+                        id++;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error writing file: {ex.Message}");
+            }
+
+
+            filepath = "INIT-RESULTS/REWARD2.txt";
+
+            try
+            {
+                using (StreamWriter writer = new StreamWriter(filepath))
+                {
+
+                    writer.Write("#\t");
+                    for (int i = 1; i <= (Sensors.Count + 4); i++)
+                    {
+                        writer.Write($"{i}\t");
+                    }
+
+                    writer.WriteLine("");
+                    writer.Write("#\tid\tq\tn_on\tf2\t");
+                    for (int i = 0; i < Sensors.Count; i++)
+                    {
+                        writer.Write($"rew{i + 1}\t");
+                    }
+                    writer.Write($"Nash\t");
+                    writer.WriteLine("");
+                    int id = 0;
+
+                    foreach (var indi in individuals)
+                    {
+                        writer.Write($"\t{id}\t{Math.Round(indi.Coverage, 2)}\t{indi.NumberOfTurnedOnSensors}\t{Math.Round(indi.F2_Rewards.Average(), 2)}\t");
+                        for (int i = 0; i < Sensors.Count; i++)
+                        {
+                            writer.Write($"{indi.F2_Rewards[i]}\t");
+                        }
+                        writer.Write($"{indi.Nash}\t");
                         writer.WriteLine();
                         id++;
                     }
