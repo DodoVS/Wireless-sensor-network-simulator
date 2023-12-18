@@ -257,7 +257,9 @@ namespace CCS
                     numberOfTurnedOnSensors++;
             }
 
-            return new Individual(permutation, numberOfTurnedOnSensors, globalCoverage, localRewards, false);
+            bool nash = localRewards.Any(x => x == _CY);
+
+            return new Individual(permutation, numberOfTurnedOnSensors, globalCoverage, localRewards, nash);
         }
 
         private List<string> GeneratePermutations()
@@ -290,7 +292,6 @@ namespace CCS
             return permutations;
 
         }
-
 
         private void saveAllF1(List<Individual> individuals)
         {
