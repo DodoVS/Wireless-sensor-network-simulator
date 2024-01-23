@@ -15,6 +15,12 @@ namespace CCS
         public double F1_result { get; set; }
         public List<double> F2_Rewards { get; set; }
         public bool Nash {  get; set; }
+
+        public Individual()
+        {
+
+        }
+
         public Individual(string permutation)
         {  
             Permutation = permutation;

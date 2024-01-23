@@ -307,7 +307,7 @@ namespace CCS
                 sensor.PoIs = new List<Point>();
         }
 
-        private void CalcSensorID_Click(object sender, RoutedEventArgs e)
+        public void CalcSensorID_Click(object sender, RoutedEventArgs e)
         {
             AssignIDs();
             string filename = "INIT-RESULTS/sensorID-WSN-";
@@ -609,7 +609,7 @@ namespace CCS
 
 
 
-        private void Find_WSN_Graph_click(object sender, RoutedEventArgs e)
+        public void Find_WSN_Graph_click(object sender, RoutedEventArgs e)
         {
             var numberOfSensors = Sensors.Count.ToString();
 
@@ -687,7 +687,7 @@ namespace CCS
         }
 
 
-        private void Find_Sensor_Rank_click(object sender, RoutedEventArgs e)
+        public void Find_Sensor_Rank_click(object sender, RoutedEventArgs e)
         {
 
             var numberOfSensors = Sensors.Count.ToString();
@@ -759,6 +759,9 @@ namespace CCS
 
         private void NextPageButton_Click(object sender, RoutedEventArgs e)
         {
+            AssignIDs();
+            ClearPoIInSensors();
+            AssignPoIToSensors();
             mainWindow.ChangeFirstPageToSecond(POIs, Sensors, sensorRange);
         }
     }

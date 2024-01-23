@@ -115,15 +115,15 @@
                             </Grid>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                            <RadioButton Margin="0,0,6,0" Content="type 1" GroupName="CandidateType"  />
-                            <RadioButton Margin="0,0,6,0" Content="type 2" GroupName="CandidateType"  />
-                            <RadioButton Content="type 3" GroupName="CandidateType"  />
+                            <RadioButton Margin="0,0,6,0" Content="type 1" GroupName="CandidateType" x:Name="Cross1" />
+                            <RadioButton Margin="0,0,6,0" Content="type 2" GroupName="CandidateType" x:Name="Cross2" />
+                            <RadioButton Content="type 3" GroupName="CandidateType" x:Name="Cross3" />
                         </StackPanel>
                         <Label>mutation</Label>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                            <RadioButton Margin="0,0,6,0" Content="type 1" GroupName="MutationType"  />
-                            <RadioButton Margin="0,0,6,0" Content="type 2" GroupName="MutationType"  />
-                            <RadioButton Content="type 3" GroupName="MutationType"  />
+                            <RadioButton Margin="0,0,6,0" Content="type 1" GroupName="MutationType" x:Name="Muta1" />
+                            <RadioButton Margin="0,0,6,0" Content="type 2" GroupName="MutationType" x:Name="Muta2"/>
+                            <RadioButton Content="type 3" GroupName="MutationType" x:Name="Muta3"/>
                         </StackPanel>
                     </StackPanel>
                     <StackPanel Grid.Column="1" Grid.Row="1" Margin="2,0,0,0">
