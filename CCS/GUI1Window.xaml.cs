@@ -395,7 +395,7 @@ namespace CCS
                     writer.WriteLine($"#Sensor for file: {filepath}.txt");
 
                     // Write header
-                    writer.Write("#\t q");
+                    writer.Write("#q");
                     for (int i = 1; i <= Sensors.Count; i++)
                     {
                         writer.Write($"\t s{i}");
@@ -407,7 +407,6 @@ namespace CCS
                     }
 
                     writer.WriteLine("");
-                    writer.Write("\t");
                     // Write data
 
 
@@ -666,7 +665,7 @@ namespace CCS
                     // Display the results
                     foreach (var kvp in sensorNeighborsMap)
                     {
-                        writer.WriteLine($"\t{kvp.Key}\t{kvp.Value.Count()}\t{string.Join(" ", kvp.Value)}");
+                        writer.WriteLine($"{kvp.Key}\t{kvp.Value.Count()}\t{string.Join(" ", kvp.Value)}");
                     }
                     writer.WriteLine("");
 
@@ -745,7 +744,7 @@ namespace CCS
                     // Display the results
                     foreach (var kvp in sensorRankMap)
                     {
-                        writer.WriteLine($"\t{kvp.Key}\t{kvp.Value.Count()}\t{string.Join(" ", kvp.Value)}");
+                        writer.WriteLine($"{kvp.Key}\t{kvp.Value.Count()}\t{string.Join(" ", kvp.Value)}");
                     }
                     writer.WriteLine("");
 

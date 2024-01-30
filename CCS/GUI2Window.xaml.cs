@@ -155,9 +155,9 @@ namespace CCS
             provider.NumberDecimalSeparator = ".";
             provider.NumberGroupSeparator = ",";
 
-            mainWindow.GUI1Window.Find_WSN_Graph_click(null, null);
-            mainWindow.GUI1Window.Find_Sensor_Rank_click(null, null);
-            mainWindow.GUI1Window.CalcSensorID_Click(null, null);
+            //mainWindow.GUI1Window.Find_WSN_Graph_click(null, null);
+            //mainWindow.GUI1Window.Find_Sensor_Rank_click(null, null);
+            //mainWindow.GUI1Window.CalcSensorID_Click(null, null);
 
             // it needs provider because PL-pl convertion
             double requestedCoverage = Convert.ToDouble(QReq.Text, provider);
@@ -220,7 +220,7 @@ namespace CCS
             saveGASolutions(pop_fitt, currBestSol, 0, requestedCoverage);
 
 
-            for (int i = 1; i <= l+1; i++)
+            for (int i = 1; i <= l; i++)
             {
                 if (deltaL < 0)
                 {
@@ -242,8 +242,6 @@ namespace CCS
                     }
                 }
             }
-
-
             saveBestSolut(currBestSol);
         }
 
@@ -704,14 +702,14 @@ namespace CCS
                 using (StreamWriter writer = new StreamWriter(filepath))
                 {
 
-                    writer.Write("#\t");
+                    writer.Write("#");
                     for (int i = 1; i < (Sensors.Count + 5); i++)
                     {
                         writer.Write($"{i}\t");
                     }
 
                     writer.WriteLine("");
-                    writer.Write("#\tid\tq\tn_on\tf1\t");
+                    writer.Write("#id\tq\tn_on\tf1\t");
                     for (int i = 0; i < Sensors.Count; i++)
                     {
                         writer.Write($"s{i + 1}\t");
@@ -722,7 +720,7 @@ namespace CCS
                     foreach (var indi in individuals)
                     {
 
-                        writer.Write($"\t{id}\t{Math.Round(indi.Coverage, 2)}\t{indi.NumberOfTurnedOnSensors}\t{Math.Round(indi.F1_result, 2)}\t");
+                        writer.Write($"{id}\t{Math.Round(indi.Coverage, 2)}\t{indi.NumberOfTurnedOnSensors}\t{Math.Round(indi.F1_result, 2)}\t");
                         for (int i = 0; i < Sensors.Count; i++)
                         {
                             writer.Write($"{indi.Permutation[i]}\t");
@@ -747,14 +745,14 @@ namespace CCS
                 using (StreamWriter writer = new StreamWriter(filepath))
                 {
 
-                    writer.Write("#\t");
+                    writer.Write("#");
                     for (int i = 1; i <= (Sensors.Count + 4); i++)
                     {
                         writer.Write($"{i}\t");
                     }
 
                     writer.WriteLine("");
-                    writer.Write("#\tid\tq\tn_on\tf2\t");
+                    writer.Write("#id\tq\tn_on\tf2\t");
                     for (int i = 0; i < Sensors.Count; i++)
                     {
                         writer.Write($"s{i + 1}\t");
@@ -764,7 +762,7 @@ namespace CCS
 
                     foreach (var indi in individuals)
                     {
-                        writer.Write($"\t{id}\t{Math.Round(indi.Coverage, 2)}\t{indi.NumberOfTurnedOnSensors}\t{Math.Round(indi.F2_Rewards.Average(), 2)}\t");
+                        writer.Write($"{id}\t{Math.Round(indi.Coverage, 2)}\t{indi.NumberOfTurnedOnSensors}\t{Math.Round(indi.F2_Rewards.Average(), 2)}\t");
                         for (int i = 0; i < Sensors.Count; i++)
                         {
                             writer.Write($"{indi.Permutation[i]}\t");
@@ -787,14 +785,14 @@ namespace CCS
                 using (StreamWriter writer = new StreamWriter(filepath))
                 {
 
-                    writer.Write("#\t");
+                    writer.Write("#");
                     for (int i = 1; i <= (Sensors.Count + 4); i++)
                     {
                         writer.Write($"{i}\t");
                     }
 
                     writer.WriteLine("");
-                    writer.Write("#\tid\tq\tn_on\tf2\t");
+                    writer.Write("#id\tq\tn_on\tf2\t");
                     for (int i = 0; i < Sensors.Count; i++)
                     {
                         writer.Write($"rew{i + 1}\t");
@@ -805,7 +803,7 @@ namespace CCS
 
                     foreach (var indi in individuals)
                     {
-                        writer.Write($"\t{id}\t{Math.Round(indi.Coverage, 2)}\t{indi.NumberOfTurnedOnSensors}\t{Math.Round(indi.F2_Rewards.Average(), 2)}\t");
+                        writer.Write($"{id}\t{Math.Round(indi.Coverage, 2)}\t{indi.NumberOfTurnedOnSensors}\t{Math.Round(indi.F2_Rewards.Average(), 2)}\t");
                         for (int i = 0; i < Sensors.Count; i++)
                         {
                             writer.Write($"{indi.F2_Rewards[i]}\t");
