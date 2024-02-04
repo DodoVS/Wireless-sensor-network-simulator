@@ -111,8 +111,8 @@ namespace CCS
                     Fill = Brushes.Orange,
                 };
 
-                Canvas.SetLeft(ellipse, point.X - ellipse.Width / 2);
-                Canvas.SetTop(ellipse, point.Y - ellipse.Height / 2);
+                Canvas.SetLeft(ellipse, (point.X - ellipse.Width / 2)+1);
+                Canvas.SetTop(ellipse, (point.Y - ellipse.Height / 2)+1);
 
                 myCanvas.Children.Add(ellipse);
             }
@@ -122,17 +122,17 @@ namespace CCS
         {
             List<Point> points = new List<Point>();
 
-            double sectors = 100 / Math.Sqrt(numberOfPoints);
+            double sectors = 100 / (Math.Sqrt(numberOfPoints)-1);
 
-            for (double i = 0; i < 100 - (sectors / 2); i += sectors)
+            for (double i = 0; i <= 100; i += sectors)
             {
-                for (double j = 0; j < 100 - (sectors / 2); j += sectors)
+                for (double j = 0; j <= 100; j += sectors)
                 {
-                    points.Add(new Point(i + (sectors / 2), j + (sectors / 2)));
+                    points.Add(new Point(i, j));
                 }
             }
 
-            return points;
+                return points;
         }
 
         private void DrawSensors()
@@ -146,8 +146,8 @@ namespace CCS
                     Fill = Brushes.Red,
                 };
 
-                Canvas.SetLeft(ellipse, sensor.X - ellipse.Width / 2);
-                Canvas.SetTop(ellipse, sensor.Y - ellipse.Height / 2);
+                Canvas.SetLeft(ellipse, (sensor.X - ellipse.Width / 2)+1);
+                Canvas.SetTop(ellipse, (sensor.Y - ellipse.Height / 2)+1);
 
                 myCanvas.Children.Add(ellipse);
             }
@@ -234,8 +234,8 @@ namespace CCS
                 if (sensor.IsWorking)
                     ellipse.Fill = strokeBrush;
 
-                Canvas.SetLeft(ellipse, sensor.X - radius);
-                Canvas.SetTop(ellipse, sensor.Y - radius);
+                Canvas.SetLeft(ellipse, (sensor.X - radius)+1);
+                Canvas.SetTop(ellipse, (sensor.Y - radius)+1);
 
                 myCanvas.Children.Add(ellipse);
             }

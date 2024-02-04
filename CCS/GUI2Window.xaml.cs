@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Numerics;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -92,17 +93,6 @@ namespace CCS
             sensorRange = range;
         }
 
-        static List<Sensor> ActiveSensorsFromNumber(List<Sensor> sensors, int number)
-        {
-            List<Sensor> newActiveSensors = new List<Sensor>(sensors);
-            string binaryNumber = Convert.ToString(number, 2).PadLeft(sensors.Count, '0');
-            for (int j = 0; j < sensors.Count; j++)
-            {
-                newActiveSensors[j].IsWorking = ParseStringToBoolean(binaryNumber[j]);
-            }
-            return newActiveSensors;
-        }
-
         static bool ParseStringToBoolean(char value)
         {
             if (value == '1')
@@ -116,11 +106,11 @@ namespace CCS
         /*
                 Returns every Points that is in range of active sensors without repeating of points
         */
-        static List<Point> GetPointInActiveAreas(List<Sensor> sensors)
+        private List<Point> GetPointInActiveAreas(List<Sensor> sensors)
         {
             List<Point> PoIsInActiveSensors = new List<Point>();
 
-            foreach (var sensor in sensors)
+            foreach (var sensor in Sensors)
                 if (sensor.IsWorking)
                     PoIsInActiveSensors.AddRange(sensor.PoIs);
 
@@ -365,7 +355,7 @@ namespace CCS
                 temp_cross_pop.Add(childTwo);
             }
 
-            if (temp_cross_pop.Count < 100)
+            if (temp_cross_pop.Count < Convert.ToInt32(PopSizeM.Text))
             {
                 parent_one = temp_pop[0];
                 temp_pop.Remove(parent_one);
@@ -645,7 +635,6 @@ namespace CCS
                     if (qValues[i] >= requestedCoverage)
                     {
                         localRewards.Add(_CY);
-                        nash = true;
                     }
 
                     else
@@ -658,6 +647,8 @@ namespace CCS
                 if (sensor.IsWorking)
                     numberOfTurnedOnSensors++;
             }
+            if(localRewards.Average() > _CN)
+                nash = true;
 
             return new Individual(permutation, numberOfTurnedOnSensors, globalCoverage, localRewards, nash);
         }
@@ -688,7 +679,7 @@ namespace CCS
                 permutations.Add(permutation.ToString());
             }
 
-            // Return the list of permutations
+            permutations.Sort((x, y) => Convert.ToInt32(x, 2).CompareTo(Convert.ToInt32(y, 2)));
             return permutations;
 
         }

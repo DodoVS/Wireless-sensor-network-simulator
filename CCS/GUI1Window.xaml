@@ -80,7 +80,7 @@
             </Grid>
         </Grid>
         <Viewbox Stretch="Fill" Grid.Column="1" ClipToBounds="True">
-            <Canvas x:Name="myCanvas" Height="100" Width="100">
+            <Canvas x:Name="myCanvas" Height="102" Width="102">
                 <Canvas.LayoutTransform>
                     <ScaleTransform ScaleY="-1"/>
                 </Canvas.LayoutTransform>
