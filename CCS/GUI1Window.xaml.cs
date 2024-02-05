@@ -132,7 +132,7 @@ namespace CCS
                 }
             }
 
-                return points;
+            return points;
         }
 
         private void DrawSensors()
@@ -294,7 +294,7 @@ namespace CCS
                 foreach (Point point in POIs)
                 {
                     double distance = CalculateDistance(sensor.X, sensor.Y, point.X, point.Y);
-                    if (distance <= sensorRange)
+                    if (distance < sensorRange)
                         sensor.PoIs.Add(point);
                 }
             }
