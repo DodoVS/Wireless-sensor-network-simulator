@@ -27,7 +27,7 @@ namespace CCS
         private Random random;
         private Individual currBestSol;
         private double _propability;
-
+        private int _seed;
 
         public GUI2Window(MainWindow window)
         {
@@ -174,10 +174,10 @@ namespace CCS
 
             if ((bool)Debug1.IsChecked)
             {
-                if (Sensors.Count >= 12)
-                {
-                    return;
-                }
+                //if (Sensors.Count >= 12)
+                //{
+                  //  return;
+                //}
 
                 List<string> permutations = GeneratePermutations();
 
@@ -456,20 +456,20 @@ namespace CCS
             // GA_results.txt
             string GaResults = "INIT-RESULTS/GA-results.txt";
             Individual best_local = findBestSolution(population, requestCoverage);
-            string sollutions = $"{gen}\t{Math.Round(best_local.Coverage, 2)}\t {best_local.NumberOfTurnedOnSensors}\t";
+            string sollutions = $"{gen}\t{Math.Round(best_local.Coverage, 2)}\t{best_local.NumberOfTurnedOnSensors}\t\t";
             if ((bool)F1.IsChecked)
             {
                 sollutions += $"{Math.Round(best_local.F1_result, 2)}\t";
-                sollutions +=  $"{Math.Round(population.Max(obj => obj.F1_result),2)}\t";
+                sollutions +=  $"{Math.Round(population.Max(obj => obj.F1_result),2)}\t\t";
                 sollutions +=  $"{Math.Round(population.Average(obj => obj.F1_result),2)}\t";
-                sollutions += $"{Math.Round(best.F1_result,2)}\t{best.NumberOfTurnedOnSensors}";
+                sollutions += $"{Math.Round(best.F1_result,2)}\t\t{best.NumberOfTurnedOnSensors}";
             }
             else
             {
                 sollutions += $"{Math.Round(best_local.F2_Rewards.Average(), 2)}\t";
-                sollutions += $"{Math.Round(population.Max(obj => obj.F2_Rewards.Average()), 2)}\t";
+                sollutions += $"{Math.Round(population.Max(obj => obj.F2_Rewards.Average()), 2)}\t\t";
                 sollutions += $"{Math.Round(population.Average(obj => obj.F2_Rewards.Average()), 2)}\t";
-                sollutions += $"{Math.Round(best.F2_Rewards.Average(), 2)}\t{best.NumberOfTurnedOnSensors}";
+                sollutions += $"{Math.Round(best.F2_Rewards.Average(), 2)}\t\t{best.NumberOfTurnedOnSensors}";
             }
 
             if (gen == 0)
@@ -481,6 +481,7 @@ namespace CCS
                     writer.WriteLine($"#Sensor Range: {sensorRange}");
                     writer.WriteLine($"#POI: {POIs.Count}");
                     writer.WriteLine($"#Requested Coverage: {requestCoverage}");
+                    writer.WriteLine($"#Seed: {_seed}");
                     if ((bool)F1.IsChecked)
                         writer.WriteLine("#gen\tbest_q\tbest_n_on\tbest_f1\tbest_fitn\tav_fitn\tabs_best_f1\tabs_best_n_on");
                     else
@@ -698,10 +699,27 @@ namespace CCS
                 permutations.Add(permutation.ToString());
             }
 
-            permutations.Sort((x, y) => Convert.ToInt32(x, 2).CompareTo(Convert.ToInt32(y, 2)));
+            permutations.Sort((x, y) => Convert.ToInt64(x, 2).CompareTo(Convert.ToInt64(y, 2)));
             return permutations;
 
         }
+
+        private void seed_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            try
+            {
+                int.TryParse(seed.Text, out int newValue);
+                _seed = newValue;
+
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error parsing value: {ex.Message}");
+            }
+        }
+
+    
 
         private void saveAllF1(List<Individual> individuals)
         {
@@ -833,14 +851,17 @@ namespace CCS
         private List<string> initializePopulation(int n)
         {
             var population = new List<string>();
-
+          
+            Random rand = new Random(_seed);
+            
             for (int i = 0; i < n; i++)
             {
                 StringBuilder binaryString = new StringBuilder();
 
                 for (int j = 0; j < Sensors.Count; j++)
-                {
-                    double randomNumber = random.NextDouble();
+                {   
+
+                    double randomNumber = rand.NextDouble();
                     if (_propability <= randomNumber)
                         binaryString.Append("1");
                     else
