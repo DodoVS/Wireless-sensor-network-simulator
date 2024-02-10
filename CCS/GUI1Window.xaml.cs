@@ -761,7 +761,7 @@ namespace CCS
             AssignIDs();
             ClearPoIInSensors();
             AssignPoIToSensors();
-            mainWindow.ChangeFirstPageToSecond(POIs, Sensors, sensorRange);
+            mainWindow.ChangeFirstPageToSecond(POIs, Sensors, sensorRange, double.Parse(RandomlySensor.Text, CultureInfo.InvariantCulture));
         }
     }
 }

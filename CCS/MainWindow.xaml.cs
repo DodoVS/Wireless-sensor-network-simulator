@@ -50,10 +50,10 @@ namespace CCS
             }
         }
 
-        public void ChangeFirstPageToSecond(List<Point> pois, List<Sensor> sensors, double range)
+        public void ChangeFirstPageToSecond(List<Point> pois, List<Sensor> sensors, double range, double propability)
         {
             ViewControl.Content = GUI2Window.Content;
-            GUI2Window.SetDataFromPageOne(pois, sensors, range);
+            GUI2Window.SetDataFromPageOne(pois, sensors, range, propability);
         }
 
         public void ChangeSecondPageToFirst()

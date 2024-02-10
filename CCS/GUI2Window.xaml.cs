@@ -26,6 +26,7 @@ namespace CCS
         private double _CN, _CY, _DN, _DY;
         private Random random;
         private Individual currBestSol;
+        private double _propability;
 
 
         public GUI2Window(MainWindow window)
@@ -86,11 +87,12 @@ namespace CCS
             mainWindow.ChangeSecondPageToFirst();
         }
 
-        public void SetDataFromPageOne(List<Point> pois, List<Sensor> sensors, double range)
+        public void SetDataFromPageOne(List<Point> pois, List<Sensor> sensors, double range, double propability)
         {
             POIs = new List<Point>(pois);
             Sensors = new List<Sensor>(sensors);
             sensorRange = range;
+            _propability = propability;
         }
 
         static bool ParseStringToBoolean(char value)
@@ -257,7 +259,7 @@ namespace CCS
                     pop_fitt.Add(CalculateFunctionF1(permutation.Permutation, requestedCoverage));
                 else
                     pop_fitt.Add(CalculateFunctionF2(permutation.Permutation, requestedCoverage));
-            };
+            }
             if ((bool)elilistStreetHillclimbing.IsChecked)
             {
                 Individual newBestSollution = findBestSolution(pop_fitt, requestedCoverage);
@@ -265,11 +267,14 @@ namespace CCS
                 {
                     int index = pop.IndexOf(pop.OrderBy(obj => obj.Coverage).FirstOrDefault());
                     pop[index] = newBestSollution;
+                    currBestSol = newBestSollution;
                 }
             }
             else
             {
-                currBestSol = findBestSolution(pop_fitt, requestedCoverage);
+                Individual newBestSollution = findBestSolution(pop_fitt, requestedCoverage);
+                if (IsSolltionBetter(newBestSollution, currBestSol, requestedCoverage))
+                    currBestSol = newBestSollution;
             }
             if ((bool)elilistStreetHillclimbing.IsChecked)
             {
@@ -450,17 +455,18 @@ namespace CCS
         {
             // GA_results.txt
             string GaResults = "INIT-RESULTS/GA-results.txt";
-            string sollutions = $"{gen}\t{Math.Round(population.OrderByDescending(obj => obj.Coverage).FirstOrDefault().Coverage, 2)}\t {population.OrderByDescending(obj => obj.NumberOfTurnedOnSensors).FirstOrDefault().NumberOfTurnedOnSensors}\t";
+            Individual best_local = findBestSolution(population, requestCoverage);
+            string sollutions = $"{gen}\t{Math.Round(best_local.Coverage, 2)}\t {best_local.NumberOfTurnedOnSensors}\t";
             if ((bool)F1.IsChecked)
             {
-                sollutions += $"{Math.Round(population.OrderByDescending(obj => obj.F1_result).FirstOrDefault().F1_result, 2)}\t";
+                sollutions += $"{Math.Round(best_local.F1_result, 2)}\t";
                 sollutions +=  $"{Math.Round(population.Max(obj => obj.F1_result),2)}\t";
                 sollutions +=  $"{Math.Round(population.Average(obj => obj.F1_result),2)}\t";
                 sollutions += $"{Math.Round(best.F1_result,2)}\t{best.NumberOfTurnedOnSensors}";
             }
             else
             {
-                sollutions += $"{Math.Round(population.OrderByDescending(obj => obj.F2_Rewards.Average()).FirstOrDefault().F2_Rewards.Average(), 2)}\t";
+                sollutions += $"{Math.Round(best_local.F2_Rewards.Average(), 2)}\t";
                 sollutions += $"{Math.Round(population.Max(obj => obj.F2_Rewards.Average()), 2)}\t";
                 sollutions += $"{Math.Round(population.Average(obj => obj.F2_Rewards.Average()), 2)}\t";
                 sollutions += $"{Math.Round(best.F2_Rewards.Average(), 2)}\t{best.NumberOfTurnedOnSensors}";
@@ -470,7 +476,15 @@ namespace CCS
             {
                 using (StreamWriter writer = new StreamWriter(GaResults))
                 {
-                    writer.WriteLine("#gen\tbest_q\tbest_n_on\tbest_f1|f2\tbest_fitn\tav_fitn\tabs_best_f1|f2\tabs_best_n_on");
+                    writer.WriteLine("#Parameters of run:");
+                    writer.WriteLine($"#Number of Sensors: {Sensors.Count}");
+                    writer.WriteLine($"#Sensor Range: {sensorRange}");
+                    writer.WriteLine($"#POI: {POIs.Count}");
+                    writer.WriteLine($"#Requested Coverage: {requestCoverage}");
+                    if ((bool)F1.IsChecked)
+                        writer.WriteLine("#gen\tbest_q\tbest_n_on\tbest_f1\tbest_fitn\tav_fitn\tabs_best_f1\tabs_best_n_on");
+                    else
+                        writer.WriteLine("#gen\tbest_q\tbest_n_on\tbest_f2\tbest_fitn\tav_fitn\tabs_best_f2\tabs_best_n_on");
                     writer.WriteLine(sollutions);
                 }
             }
@@ -564,11 +578,16 @@ namespace CCS
             {
                 if (individual.Coverage > requestedCoverage)
                 {
-                    if(best.Coverage < requestedCoverage && individual.Coverage >= requestedCoverage)
+                    if(best.NumberOfTurnedOnSensors > individual.NumberOfTurnedOnSensors)
+                    {
                         best = individual;
-
-                    if (best.NumberOfTurnedOnSensors > individual.NumberOfTurnedOnSensors)
+                        continue;
+                    }
+                    if(best.Coverage < individual.Coverage)
+                    {
                         best = individual;
+                    }
+                    
                 }
             }
             return best;
@@ -821,8 +840,11 @@ namespace CCS
 
                 for (int j = 0; j < Sensors.Count; j++)
                 {
-                    int randomBit = random.Next(2);
-                    binaryString.Append(randomBit);
+                    double randomNumber = random.NextDouble();
+                    if (_propability <= randomNumber)
+                        binaryString.Append("1");
+                    else
+                        binaryString.Append("0");
                 }
                 population.Add(binaryString.ToString());
 
