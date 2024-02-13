@@ -1,14 +1,9 @@
-﻿using System;
-using System.Diagnostics;
-using System.Globalization;
+﻿using System.Globalization;
 using System.IO;
-using System.Numerics;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Shapes;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 
 namespace CCS
@@ -36,7 +31,7 @@ namespace CCS
             mainWindow = window;
             POIs = new List<Point>();
             Sensors = new List<Sensor>();
-            random = new Random();
+            random = new Random(Seed: 666);
             currBestSol = new Individual();
         }
 
@@ -214,42 +209,44 @@ namespace CCS
 
             for (int i = 1; i <= l; i++)
             {
-                if (deltaL < 0)
-                {
-                    pop_fitt = applyGA(pop_fitt, requestedCoverage, i);
-                }
-                else
-                {
-                    if (deltaL != 0)
-                    {
-                        orDeltaL++;
-                        if (orDeltaL < Convert.ToInt32(DeltaL.Text))
-                        {
-                            pop_fitt = applyGA(pop_fitt, requestedCoverage, i);
-                        }
-                        else
-                        {
-                            orDeltaL = 0;
-                        }
-                    }
-                }
+                //if (deltaL < 0)
+                //{
+                //    pop_fitt = applyGA(pop_fitt, requestedCoverage, i);
+                //}
+                //else
+                //{
+                //    if (deltaL != 0)
+                //    {
+                //        orDeltaL++;
+                //        if (orDeltaL < Convert.ToInt32(DeltaL.Text))
+                //        {
+                //            pop_fitt = applyGA(pop_fitt, requestedCoverage, i);
+                //        }
+                //        else
+                //        {
+                //            orDeltaL = 0;
+                //        }
+                //    }
+                //}
+
+                pop_fitt = new List<Individual>(applyGA(pop_fitt, requestedCoverage, i));
             }
             saveBestSolut(currBestSol);
         }
 
         private List<Individual> applyGA(List<Individual> temPop, double requestedCoverage, int gen)
         {
-            List<Individual> tempSelectPop = TournamentSelection(temPop, Convert.ToInt32(TournameSize.Text));
+            List<Individual> tempSelectPop = new List<Individual>(TournamentSelection(temPop, Convert.ToInt32(TournameSize.Text),0.3));
 
             List<Individual> tempCrossPop = null;
             if ((bool)Cross1.IsChecked)
-                tempCrossPop = CrossoverType1(tempSelectPop, 0.6);
+                tempCrossPop = new List<Individual>(CrossoverType1(tempSelectPop, Convert.ToDouble(CrossoverProbability.Text)));
 
             List<Individual> tempMutPop = null;
             if ((bool)Muta1.IsChecked)
-                tempMutPop = CalculateMutation1(tempCrossPop, 0.1);
+                tempMutPop = new List<Individual>(CalculateMutation1(tempCrossPop, Convert.ToDouble(MutationProbability.Text)));
 
-            List<Individual> pop = tempMutPop;
+            List<Individual> pop = new List<Individual>(tempMutPop);
 
             List<Individual> pop_fitt = new List<Individual>();
 
@@ -281,6 +278,7 @@ namespace CCS
                 int index = pop_fitt.IndexOf(pop_fitt.OrderBy(obj => obj.Coverage).FirstOrDefault());
                 pop_fitt[index] = currBestSol;
             }
+
             saveGASolutions(pop_fitt, currBestSol, gen, requestedCoverage);
             return pop;
         }
@@ -305,71 +303,50 @@ namespace CCS
 
         private List<Individual> CrossoverType1(List<Individual> temp_select_pop_old, double probability)
         {
-
-            int i = 0;
-
             List<Individual> temp_cross_pop = new List<Individual>();
-            List<Individual> temp_pop = new List<Individual>();
-            Individual parent_one = new Individual();
-            Individual parent_two = new Individual();
 
-
-            int sensorsCount = Sensors.Count; // assume this is defined elsewhere
-
-
-            for (int k = 0; k < temp_select_pop_old.Count; k++)
+            // Perform crossover for selected individuals
+            for (int i = 0; i < temp_select_pop_old.Count; i += 2)
             {
-                double r = new Random().NextDouble();
-
-                if (r < probability)
+                // Check if there are enough individuals for crossover
+                if (i + 1 < temp_select_pop_old.Count)
                 {
-                    temp_cross_pop.Add(temp_select_pop_old[k]);
+                    // Select two parents for crossover
+                    Individual parentOne = temp_select_pop_old[i];
+                    Individual parentTwo = temp_select_pop_old[i + 1];
+
+                    // Perform crossover with a certain probability
+                    if (random.NextDouble() <= probability)
+                    {
+                        // Generate a random crossover point
+                        int crossoverPoint = random.Next(0, parentOne.Permutation.Length);
+
+                        // Create two children by exchanging genetic information
+                        Individual childOne = new Individual();
+                        Individual childTwo = new Individual();
+
+                        // Perform crossover
+                        childOne.Permutation = parentOne.Permutation.Substring(0, crossoverPoint) +
+                                                parentTwo.Permutation.Substring(crossoverPoint);
+                        childTwo.Permutation = parentTwo.Permutation.Substring(0, crossoverPoint) +
+                                                parentOne.Permutation.Substring(crossoverPoint);
+
+                        // Add children to the crossover population
+                        temp_cross_pop.Add(childOne);
+                        temp_cross_pop.Add(childTwo);
+                    }
+                    else
+                    {
+                        // If crossover doesn't happen, simply add parents to the crossover population
+                        temp_cross_pop.Add(parentOne);
+                        temp_cross_pop.Add(parentTwo);
+                    }
                 }
                 else
                 {
-                    temp_pop.Add(temp_select_pop_old[k]);
-                    i += 1;
+                    // If there's an odd number of individuals, add the last individual to the crossover population
+                    temp_cross_pop.Add(temp_select_pop_old[i]);
                 }
-
-            }
-
-
-            for (int l = 0; l < Math.Floor(i / 2.0); l++)
-            {
-                parent_one = temp_pop[new Random().Next(temp_pop.Count)];
-                temp_pop.Remove(parent_one);
-                parent_two = temp_pop[new Random().Next(temp_pop.Count)];
-                temp_pop.Remove(parent_two);
-
-                int rand = new Random().Next(0, sensorsCount);
-
-                // Create childOne using genes from parent_one and parent_two
-                Individual childOne = new Individual();
-                Individual childTwo = new Individual();
-                // Copy genes from parent_one up to the random index
-
-                childOne.Permutation += parent_one.Permutation.Substring(0, rand);
-                childOne.Permutation +=
-                    parent_two.Permutation.Substring(rand, (parent_two.Permutation.Length - rand));
-                temp_cross_pop.Add(childOne);
-
-
-                childTwo.Permutation += parent_two.Permutation.Substring(0, rand);
-                childTwo.Permutation +=
-                    parent_one.Permutation.Substring(rand, (parent_one.Permutation.Length - rand));
-                temp_cross_pop.Add(childTwo);
-            }
-
-            if (temp_cross_pop.Count < Convert.ToInt32(PopSizeM.Text))
-            {
-                parent_one = temp_pop[0];
-                temp_pop.Remove(parent_one);
-                int rand = new Random().Next(0, sensorsCount);
-                Individual childOne = new Individual();
-                childOne.Permutation += parent_one.Permutation.Substring(0, rand);
-                childOne.Permutation +=
-                    parent_two.Permutation.Substring(rand, (parent_two.Permutation.Length - rand));
-                temp_cross_pop.Add(childOne);
             }
 
             return temp_cross_pop;
@@ -378,56 +355,32 @@ namespace CCS
         private List<Individual> CalculateMutation1(List<Individual> temp_cross_pop, double probability)
         {
 
-            int i = 0;
-            int k = 0;
-
             List<Individual> temp_mut_pop = new List<Individual>();
 
-            int sensorsCount = Sensors.Count; // assume this is defined elsewhere
 
-
-            for (k = 0; k < temp_cross_pop.Count; k++)
+            for (int k = 0; k < temp_cross_pop.Count; k++)
             {
-                for (; i < Sensors.Count; i++)
+                StringBuilder permutation = new StringBuilder(temp_cross_pop[k].Permutation);
+                for (int i = 0; i < permutation.Length; i++)
                 {
-                    double rand = new Random().NextDouble();
-                    if (rand <= probability)
+                    // Flip the bit with a higher probability if it's '1'
+                    if (permutation[i] == '1' && random.NextDouble() < probability * 2)
                     {
-                        int x = 0;
-
-
-                        if (i >= 0 && i < temp_cross_pop[k].Permutation.Length)
-                        {
-                            // Convert the string to a char array to make modifications
-                            char[] charArray = temp_cross_pop[k].Permutation.ToCharArray();
-
-                            // Change the character at the specified index
-                            if (charArray[i] == '0')
-                            {
-                                charArray[i] = '1';
-                            }
-                            else
-                            {
-                                charArray[i] = '0';
-                            }
-                            // Create a new string from the modified char array
-                            string modifiedString = new string(charArray);
-                            temp_cross_pop[k].Permutation = modifiedString;
-                        }
-                        else
-                        {
-                            Console.WriteLine("Index is out of bounds.");
-                        }
+                        permutation[i] = '0';
                     }
-                    
+                    // Mutate the bit with a lower probability if it's '0'
+                    else if (permutation[i] == '0' && random.NextDouble() < probability)
+                    {
+                        permutation[i] = '1';
+                    }
                 }
+                temp_cross_pop[k].Permutation = permutation.ToString();
                 temp_mut_pop.Add(temp_cross_pop[k]);
-                i = 0;
             }
             return temp_mut_pop;
         }
 
-        private List<Individual> TournamentSelection(List<Individual> temp_pop, int tournamentSize)
+        private List<Individual> TournamentSelection(List<Individual> temp_pop, int tournamentSize, double probability)
         {
             List<Individual> selectedPopulation = new List<Individual>();
 
@@ -437,16 +390,17 @@ namespace CCS
                 List<Individual> tournamentParticipants = new List<Individual>();
                 for (int j = 0; j < tournamentSize; j++)
                 {
-                    int randomIndex = new Random().Next(0, temp_pop.Count);
+                    int randomIndex = random.Next(0, temp_pop.Count);
                     tournamentParticipants.Add(temp_pop[randomIndex]);
                 }
 
                 // Choose the best individual from the tournament based on coverage
-                Individual winner = tournamentParticipants.OrderByDescending(individual => individual.Coverage).First();
+                Individual winner = tournamentParticipants[random.Next(tournamentParticipants.Count)];
 
                 // Add the winner to the selected population
                 selectedPopulation.Add(winner);
             }
+
 
             return selectedPopulation;
         }
@@ -455,6 +409,7 @@ namespace CCS
         {
             // GA_results.txt
             string GaResults = "INIT-RESULTS/GA-results.txt";
+
             Individual best_local = findBestSolution(population, requestCoverage);
             string sollutions = $"{gen}\t{Math.Round(best_local.Coverage, 2)}\t{best_local.NumberOfTurnedOnSensors}\t\t";
             if ((bool)F1.IsChecked)
@@ -463,6 +418,8 @@ namespace CCS
                 sollutions +=  $"{Math.Round(population.Max(obj => obj.F1_result),2)}\t\t";
                 sollutions +=  $"{Math.Round(population.Average(obj => obj.F1_result),2)}\t";
                 sollutions += $"{Math.Round(best.F1_result,2)}\t\t{best.NumberOfTurnedOnSensors}";
+                //Individual xd = population.MinBy(individual => individual.NumberOfTurnedOnSensors);
+                //sollutions += $"\t{xd.NumberOfTurnedOnSensors}\t{xd.Coverage}";
             }
             else
             {
@@ -573,18 +530,20 @@ namespace CCS
 
         private Individual findBestSolution(List<Individual> population, double requestedCoverage)
         {
-            Individual best = population[1];
+            Individual best = population[0];
 
             foreach (Individual individual in population)
             {
-                if (individual.Coverage > requestedCoverage)
+                if (individual.Coverage >= requestedCoverage)
                 {
-                    if(best.NumberOfTurnedOnSensors > individual.NumberOfTurnedOnSensors)
+                    if (individual.NumberOfTurnedOnSensors > best.NumberOfTurnedOnSensors)
+                        continue;
+                    if (individual.NumberOfTurnedOnSensors < best.NumberOfTurnedOnSensors)
                     {
                         best = individual;
                         continue;
                     }
-                    if(best.Coverage < individual.Coverage)
+                    if (individual.Coverage > best.Coverage)
                     {
                         best = individual;
                     }
@@ -613,7 +572,7 @@ namespace CCS
                     numberOfTurnedOnSensors++;
             }
 
-            if (q >= requestedCoverage)
+            if (q > requestedCoverage)
                 return new Individual(permutation, numberOfTurnedOnSensors, q, q + Sensors.Count - numberOfTurnedOnSensors);
             else
                 return new Individual(permutation, numberOfTurnedOnSensors, q, q);
@@ -748,7 +707,7 @@ namespace CCS
                     foreach (var indi in individuals)
                     {
 
-                        writer.Write($"{id}\t{Math.Round(indi.Coverage, 2)}\t{indi.NumberOfTurnedOnSensors}\t{Math.Round(indi.F1_result, 2)}\t");
+                        writer.Write($"{id}\t{Math.Round(indi.Coverage, 3)}\t{indi.NumberOfTurnedOnSensors}\t{Math.Round(indi.F1_result, 3)}\t");
                         for (int i = 0; i < Sensors.Count; i++)
                         {
                             writer.Write($"{indi.Permutation[i]}\t");
@@ -852,7 +811,6 @@ namespace CCS
         {
             var population = new List<string>();
           
-            Random rand = new Random(_seed);
             
             for (int i = 0; i < n; i++)
             {
@@ -861,8 +819,8 @@ namespace CCS
                 for (int j = 0; j < Sensors.Count; j++)
                 {   
 
-                    double randomNumber = rand.NextDouble();
-                    if (_propability <= randomNumber)
+                    double randomNumber = random.NextDouble();
+                    if (_propability > randomNumber)
                         binaryString.Append("1");
                     else
                         binaryString.Append("0");

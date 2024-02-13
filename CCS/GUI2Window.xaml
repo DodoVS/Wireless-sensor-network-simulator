@@ -107,11 +107,17 @@
                                 <Grid.RowDefinitions>
                                     <RowDefinition/>
                                     <RowDefinition/>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
                                 </Grid.RowDefinitions>
                                 <Label>tourname__size corssover</Label>
                                 <TextBox Grid.Column="1" Grid.Row="0" Text="3" Width="50" Margin="2" x:Name="TournameSize" PreviewTextInput="TextBox_PreviewNumbersOnly"></TextBox>
-                                <Label Grid.Column="0" Grid.Row="1">candidate__size</Label>
-                                <TextBox Grid.Column="1" Grid.Row="1" Text="3" Width="50" Margin="2" x:Name="CandidateSize" PreviewTextInput="TextBox_PreviewNumbersOnly"></TextBox>
+                                <Label Grid.Row="1">crossover propability</Label>
+                                <TextBox Grid.Column="1" Grid.Row="1" Text="0.9" Width="50" Margin="2" x:Name="CrossoverProbability" PreviewTextInput="TextBox_PreviewNumbersOnly"></TextBox>
+                                <Label Grid.Row="2">mutation propability</Label>
+                                <TextBox Grid.Column="1" Grid.Row="2" Text="0.004" Width="50" Margin="2" x:Name="MutationProbability" PreviewTextInput="TextBox_PreviewNumbersOnly"></TextBox>
+                                <Label Grid.Column="0" Grid.Row="3">candidate__size</Label>
+                                <TextBox Grid.Column="1" Grid.Row="3" Text="3" Width="50" Margin="2" x:Name="CandidateSize" PreviewTextInput="TextBox_PreviewNumbersOnly"></TextBox>
                             </Grid>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
